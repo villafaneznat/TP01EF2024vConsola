@@ -92,6 +92,11 @@ namespace TP01EF2024.Servicios.Servicios
             return _repository.GetCantidad();
         }
 
+        public List<Shoe>? GetShoes(Brand brand)
+        {
+            return _repository.GetShoes(brand);
+        }
+
         public void Guardar(Brand brand)
         {
             try

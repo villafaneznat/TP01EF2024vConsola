@@ -17,6 +17,6 @@ namespace TP01EF2024.Datos.Interfaces
         Genre? GetGenrePorId(int id);
         List<Genre> GetGenres();
         int GetCantidad();
-
+        List<Shoe>? GetShoes(Genre genre);
     }
 }

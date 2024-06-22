@@ -115,5 +115,10 @@ namespace TP01EF2024.Servicios.Servicios
                 throw;
             }
         }
+
+        public List<Shoe>? GetShoes(Sport sport)
+        {
+            return _repository.GetShoes(sport);
+        }
     }
 }

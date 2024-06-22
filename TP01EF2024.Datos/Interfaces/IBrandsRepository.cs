@@ -17,5 +17,6 @@ namespace TP01EF2024.Datos.Interfaces
         Brand? GetBrandPorId(int id);
         List<Brand> GetBrands();
         int GetCantidad();
+        List<Shoe>? GetShoes(Brand brand);
     }
 }

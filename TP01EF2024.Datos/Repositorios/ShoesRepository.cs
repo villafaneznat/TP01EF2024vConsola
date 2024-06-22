@@ -53,7 +53,11 @@ namespace TP01EF2024.Datos.Repositorios
 
         public Shoe? GetShoePorId(int id)
         {
-            return _context.Shoes.SingleOrDefault(s => s.ShoeId == id);
+            return _context.Shoes.
+                Include(s => s.Brand).
+                Include(s => s.Genre).
+                Include(s => s.Sport).
+                SingleOrDefault(s => s.ShoeId == id);
         }
 
         public List<Shoe> GetShoes()

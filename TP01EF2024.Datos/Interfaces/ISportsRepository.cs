@@ -17,6 +17,6 @@ namespace TP01EF2024.Datos.Interfaces
         Sport? GetSportPorId(int id);
         List<Sport> GetSports();
         int GetCantidad();
-
+        List<Shoe>? GetShoes(Sport sport);
     }
 }

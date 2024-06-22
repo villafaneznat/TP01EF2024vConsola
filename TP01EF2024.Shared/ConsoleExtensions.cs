@@ -64,5 +64,34 @@ namespace TP01EF2024.Shared
             Console.ReadLine();
 
         }
+        public static string GetValidOptions(string message, List<string>? options)
+        {
+            string answer = string.Empty;
+            if (options != null)
+            {
+                options.Insert(0, "N");
+                do
+                {
+                    answer = ReadString(message);
+
+                    if (!options.Any(x => x.Equals(answer)))
+                    {
+                        Console.WriteLine("\nIngreso no válido... Otra vez!!!");
+                    }
+                    else
+                    {
+                        /*
+                         * Si la opción tipiada es alguna de la lista, salgo del ciclo
+                         */
+                        break;
+
+                    }
+
+                } while (!options.Any(x => x.Equals(answer)));// mientras no sea un caracter válido me quedo esperando
+
+            }
+            return answer; //retorno el caracter ingresado y validado.
+
+        }
     }
 }

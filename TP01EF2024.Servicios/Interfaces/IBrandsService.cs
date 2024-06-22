@@ -16,5 +16,6 @@ namespace TP01EF2024.Servicios.Interfaces
         int GetCantidad();
         Brand GetBrandPorId(int id);
         bool EstaRelacionado(Brand brand);
+        List<Shoe>? GetShoes(Brand brand);
     }
 }

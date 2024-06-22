@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -49,6 +50,16 @@ namespace TP01EF2024.Datos.Repositorios
         public int GetCantidad()
         {
             return _context.Sports.Count();
+        }
+
+        public List<Shoe>? GetShoes(Sport sport)
+        {
+            return _context.Shoes.
+                Include(s => s.Brand).
+                Include(s => s.Sport).
+                Include(s => s.Genre).
+                Where(s => s.SportId == sport.SportId).ToList();
+
         }
 
         public Sport? GetSportPorId(int id)

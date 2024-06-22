@@ -60,5 +60,14 @@ namespace TP01EF2024.Datos.Repositorios
         {
             return _context.Brands.Count();
         }
+
+        public List<Shoe>? GetShoes(Brand brand)
+        {
+            return _context.Shoes.
+                Include(s => s.Brand).
+                Include(s => s.Sport).
+                Include(s => s.Genre).
+                Where(s=> s.BrandId == brand.BrandId).ToList();
+        }
     }
 }
