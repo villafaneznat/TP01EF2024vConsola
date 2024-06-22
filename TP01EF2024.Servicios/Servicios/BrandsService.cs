@@ -97,6 +97,18 @@ namespace TP01EF2024.Servicios.Servicios
             return _repository.GetShoes(brand);
         }
 
+        public List<Shoe>? GetShoesForPrice(Brand brand, decimal? precioDesde, decimal? precioHasta)
+        {
+            try
+            {
+                return _repository.GetShoesForPrice(brand, precioDesde, precioHasta);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public void Guardar(Brand brand)
         {
             try

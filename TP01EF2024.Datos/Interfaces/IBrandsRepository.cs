@@ -18,5 +18,6 @@ namespace TP01EF2024.Datos.Interfaces
         List<Brand> GetBrands();
         int GetCantidad();
         List<Shoe>? GetShoes(Brand brand);
+        List<Shoe>? GetShoesForPrice(Brand brand, decimal? precioDesde, decimal? precioHasta);
     }
 }

@@ -52,7 +52,8 @@ namespace TP01EF2024.Consola
                 Console.WriteLine();
                 Console.WriteLine("21. Mostrar los Zapatos POR MARCA");
                 Console.WriteLine("22. Mostrar los Zapatos POR DEPORTE");
-                Console.WriteLine("23. Mostras los Zapatos POR GENERO");
+                Console.WriteLine("23. Mostrar los Zapatos POR GENERO");
+                Console.WriteLine("24. Mostrar los Zapatos POR MARCA entre 2 precios");
                 Console.WriteLine();
 
 //TP de EF Core Nro 2
@@ -182,7 +183,14 @@ namespace TP01EF2024.Consola
                         break;
                     case "23":
                         Console.Clear();
-                        MostrarZapatosPorGenero();
+                        MostrarZapatosPorMarca();
+                        ConsoleExtensions.Enter();
+                        break;
+                    case "24":
+                        Console.Clear();
+                        var precioD = ConsoleExtensions.ReadDecimal("Buscar Zapatos por precio desde:");
+                        var precioH = ConsoleExtensions.ReadDecimal("Hasta:");
+                        MostrarZapatosPorMarca(precioD, precioH);
                         ConsoleExtensions.Enter();
                         break;
 
@@ -347,7 +355,7 @@ namespace TP01EF2024.Consola
             Thread.Sleep(5000);
         }
 
-        private static void MostrarZapatosPorMarca()
+        private static void MostrarZapatosPorMarca(decimal? precioDesde = null, decimal? precioHasta = null)
         {
             MostrarMarcas();
             var servicioMarcas = servicioProvider?.GetService<IBrandsService>();      
@@ -360,15 +368,25 @@ namespace TP01EF2024.Consola
 
             if (brand != null)
             {
+                List<Shoe>? shoes;
 
-                List<Shoe>? shoes = servicioMarcas?.GetShoes(brand);
-
-                Console.WriteLine("Listado de Zapatos");
-
-                var tabla = new ConsoleTable("ID", "MARCA", "DEPORTE", "GENERO", "MODELO", "DESCRIPCION", "PRECIO");
-                if (shoes != null)
+                if (precioDesde != null && precioHasta != null)
                 {
-                        foreach (var s in shoes)
+                    shoes = servicioMarcas?.GetShoesForPrice(brand, precioDesde, precioHasta);
+                }
+                else
+                {
+                    shoes = servicioMarcas?.GetShoes(brand);
+
+                }
+
+                if (shoes.Count() != 0)
+                {
+                    Console.WriteLine("Listado de Zapatos");
+
+                    var tabla = new ConsoleTable("ID", "MARCA", "DEPORTE", "GENERO", "MODELO", "DESCRIPCION", "PRECIO");
+
+                    foreach (var s in shoes)
                         {
                             tabla.AddRow(s.ShoeId, 
                                 s.Brand.BrandName, 
@@ -380,6 +398,10 @@ namespace TP01EF2024.Consola
                     tabla.Options.EnableCount = false;
                     tabla.Write();
 
+                }
+                else
+                {
+                    Console.WriteLine($"No existen zapatos de la marca {brand.BrandId} con precio entre ${precioDesde} y ${precioHasta}");
                 }
 
 

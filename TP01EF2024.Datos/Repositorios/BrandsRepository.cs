@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TP01EF2024.Datos.Interfaces;
 using TP01EF2024.Entidades;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace TP01EF2024.Datos.Repositorios
 {
@@ -68,6 +69,28 @@ namespace TP01EF2024.Datos.Repositorios
                 Include(s => s.Sport).
                 Include(s => s.Genre).
                 Where(s=> s.BrandId == brand.BrandId).ToList();
+        }
+
+        public List<Shoe>? GetShoesForPrice(Brand brand, decimal? precioDesde, decimal? precioHasta)
+        {
+            var query =  _context.Shoes.
+                 Include(s => s.Brand).
+                 Include(s => s.Sport).
+                 Include(s => s.Genre).
+                 Where(s => s.BrandId == brand.BrandId);
+
+            if (precioDesde.HasValue)
+            {
+                query = query.Where(s => s.Price >= precioDesde.Value);
+            }
+
+            if (precioHasta.HasValue)
+            {
+                query = query.Where(s => s.Price <= precioHasta.Value);
+            }
+
+            return query.ToList();
+
         }
     }
 }
