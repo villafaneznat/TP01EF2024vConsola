@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TP01EF2024.Entidades;
+using TP01EF2024.Entidades.Enums;
 
 namespace TP01EF2024.Servicios.Interfaces
 {
@@ -16,6 +17,22 @@ namespace TP01EF2024.Servicios.Interfaces
         int GetCantidad();
         Shoe GetShoePorId(int id);
         bool EstaRelacionado(Shoe shoe);
+        List<Shoe> GetListaPaginadaOrdenadaFiltrada(
+            int page,
+            int pageSize,
+            Orden? orden = null,
+            Brand? brand = null,
+            Sport? sport = null,
+            Genre? genre = null,
+            Colour? colour = null,
+            decimal? maximo = null,
+            decimal? minimo = null);
+        int GetCantidadFiltrada(Brand? brand = null,
+            Sport? sport = null,
+            Genre? genre = null,
+            Colour? colour = null,
+            decimal? maximo = null,
+            decimal? minimo = null);
 
     }
 }

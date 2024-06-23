@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TP01EF2024.Datos.Interfaces;
 using TP01EF2024.Entidades;
+using TP01EF2024.Entidades.Enums;
 
 namespace TP01EF2024.Datos.Repositorios
 {
@@ -72,5 +73,36 @@ namespace TP01EF2024.Datos.Repositorios
 
 
         }
+
+        public List<Genre> GetGenresPaginadosOrdenados(int page, int pageSize, Orden? orden = null)
+        {
+            IQueryable<Genre> query = _context.Genres.AsNoTracking();
+
+            //ORDEN
+            if (orden != null)
+            {
+                switch (orden)
+                {
+                    case Orden.AZ:
+                        query = query.OrderBy(g => g.GenreName);
+                        break;
+                    case Orden.ZA:
+                        query = query.OrderByDescending(g => g.GenreName);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            //PAGINADO
+            List<Genre> listaPaginada = query.AsNoTracking()
+                .Skip(page * pageSize) //Saltea estos registros
+                .Take(pageSize) //Muestra estos
+                .ToList();
+
+            return listaPaginada;
+        }
+
+
     }
 }

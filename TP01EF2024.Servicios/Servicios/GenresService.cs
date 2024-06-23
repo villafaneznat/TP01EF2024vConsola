@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TP01EF2024.Datos.Interfaces;
 using TP01EF2024.Entidades;
+using TP01EF2024.Entidades.Enums;
 using TP01EF2024.Servicios.Interfaces;
 
 namespace TP01EF2024.Servicios.Servicios
@@ -120,5 +121,12 @@ namespace TP01EF2024.Servicios.Servicios
         {
             return _repository.GetShoes(genre);
         }
+
+        public List<Genre> GetGenresPaginadosOrdenados(int page, int pageSize, Orden? orden = null)
+        {
+            return _repository.GetGenresPaginadosOrdenados(page, pageSize, orden);
+        }
+
+
     }
 }

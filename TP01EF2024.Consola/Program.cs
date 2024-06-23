@@ -16,6 +16,7 @@ namespace TP01EF2024.Consola
     internal class Program
     {
         private static IServiceProvider? servicioProvider;
+        static int pageSize = 1;
         static void Main(string[] args)
         {
             servicioProvider = DI.ConfigurarServicios();
@@ -50,24 +51,28 @@ namespace TP01EF2024.Consola
                 Console.WriteLine("19. Editar un Zapato");
                 Console.WriteLine("20. Eliminar un Zapato");
                 Console.WriteLine();
-                Console.WriteLine("21. Mostrar los Zapatos POR MARCA");
-                Console.WriteLine("22. Mostrar los Zapatos POR DEPORTE");
-                Console.WriteLine("23. Mostrar los Zapatos POR GENERO");
-                Console.WriteLine("24. Mostrar los Zapatos POR MARCA entre 2 precios");
-                Console.WriteLine();
+                Console.WriteLine("21. Ver los Zapatos POR MARCA");
+                Console.WriteLine("22. Ver los Zapatos POR DEPORTE");
+                Console.WriteLine("23. Ver los Zapatos POR GENERO");
+                Console.WriteLine("24. Ver los Zapatos POR MARCA entre 2 precios");
+                Console.WriteLine("25. Ver los Zapatos POR DEPORTE entre 2 precios");
+                Console.WriteLine("26. Ver los Zapatos POR GENERO entre 2 precios");
+                Console.WriteLine("27. Ver los Zapatos POR GENERO y DEPORTE");
+                Console.WriteLine("");
+                Console.WriteLine("28. Ver todas las Marcas paginadas");
+                Console.WriteLine("29. Ver todos los Deportes paginados");
+                Console.WriteLine("30. Ver todos los Generos paginados");
+                Console.WriteLine("31. Ver todos los Colores paginados");
+                Console.WriteLine("32. Ver todos los Zapatos paginados");
 
-//TP de EF Core Nro 2
-//Nota: Todos los listados deben estar paginados.
-//1.Mostrar las zapatillas por Marca.
-//2.Mostrar las zapatillas por Marca entre 2 precios cualesquiera.
-//3.Mostrar las zapatillas por Genero.
-//4.Mostrar las zapatillas por Deporte.
-//5.Considerar las combinaciones que pudieren haber, esto es, mostrar las zapatillas por
-//Genero y Deporte.
+                Console.WriteLine();
 
                 Console.WriteLine("PRESIONE X PARA SALIR");
                 Console.Write("Por favor, seleccione una opción: ");
                 string? input = Console.ReadLine();
+
+                var precioMin = 0m;
+                var precioMax = 0m;
 
                 switch (input)
                 {
@@ -183,14 +188,59 @@ namespace TP01EF2024.Consola
                         break;
                     case "23":
                         Console.Clear();
-                        MostrarZapatosPorMarca();
+                        MostrarZapatosPorGenero();
                         ConsoleExtensions.Enter();
                         break;
                     case "24":
                         Console.Clear();
-                        var precioD = ConsoleExtensions.ReadDecimal("Buscar Zapatos por precio desde:");
-                        var precioH = ConsoleExtensions.ReadDecimal("Hasta:");
-                        MostrarZapatosPorMarca(precioD, precioH);
+                        precioMin = ConsoleExtensions.ReadDecimal("Ingrese el precio Minimo:");
+                        precioMax = ConsoleExtensions.ReadDecimal("Ingrese el precio Maximo:");
+                        MostrarZapatosPorMarca(precioMin, precioMax);
+                        Console.WriteLine("Lista Finalizada");
+                        ConsoleExtensions.Enter();
+                        break;
+                    case "25":
+                        Console.Clear();
+                        precioMin = ConsoleExtensions.ReadDecimal("Ingrese el precio Minimo:");
+                        precioMax = ConsoleExtensions.ReadDecimal("Ingrese el precio Maximo:");
+                        MostrarZapatosPorDeporte(precioMin, precioMax);
+                        ConsoleExtensions.Enter();
+                        break;
+                    case "26":
+                        Console.Clear();
+                        precioMin = ConsoleExtensions.ReadDecimal("Ingrese el precio Minimo:");
+                        precioMax = ConsoleExtensions.ReadDecimal("Ingrese el precio Maximo:");
+                        MostrarZapatosPorGenero(precioMin, precioMax);
+                        ConsoleExtensions.Enter();
+                        break;
+                    case "27":
+                        Console.Clear();
+                        MostrarZapatosPorVariasEntidades("genero","deporte",string.Empty);
+                        ConsoleExtensions.Enter();
+                        break;
+                    case "28":
+                        Console.Clear();
+                        MostrarMarcasPaginadas();
+                        ConsoleExtensions.Enter();
+                        break;
+                    case "29":
+                        Console.Clear();
+                        MostrarDeportesPaginados(); ;
+                        ConsoleExtensions.Enter();
+                        break;
+                    case "30":
+                        Console.Clear();
+                        MostrarGenerosPaginados(); ;
+                        ConsoleExtensions.Enter();
+                        break;
+                    case "31":
+                        Console.Clear();
+                        MostrarColoresPaginados(); ;
+                        ConsoleExtensions.Enter();
+                        break;
+                    case "32":
+                        Console.Clear();
+                        MostrarZapatosPaginados(); ;
                         ConsoleExtensions.Enter();
                         break;
 
@@ -201,6 +251,7 @@ namespace TP01EF2024.Consola
             }
         }
 
+
         //SHOES
         private static void MostrarZapatos()
         {
@@ -210,17 +261,19 @@ namespace TP01EF2024.Consola
             Console.WriteLine("LISTADO DE ZAPATOS:");
 
             var tabla = new ConsoleTable("ID", "MARCA", "DEPORTE", "GENERO", "MODELO", "DESCRIPCION", "PRECIO");
-            
+
             if (shoes != null)
             {
                 foreach (var s in shoes)
                 {
-                    tabla.AddRow(s.ShoeId, s.Brand.BrandName, s.Sport.SportName, s.Genre.GenreName,s.Model,s.Description,s.Price);
+                    tabla.AddRow(s.ShoeId, s.Brand.BrandName, s.Sport.SportName, s.Genre.GenreName, s.Model, s.Description, s.Price);
                 }
             }
+
             tabla.Options.EnableCount = false;
             tabla.Write();
             Console.WriteLine($"Cantidad: {servicio?.GetCantidad()}");
+
         }
 
         private static void AgregarZapato()
@@ -355,28 +408,130 @@ namespace TP01EF2024.Consola
             Thread.Sleep(5000);
         }
 
-        private static void MostrarZapatosPorMarca(decimal? precioDesde = null, decimal? precioHasta = null)
+        private static void MostrarZapatosPaginados()
+        {
+            var servicio = servicioProvider?.GetService<IShoesService>();
+
+            var CantidadRegistros = servicio?.GetCantidad() ?? 0;
+            var CantidadDePaginas = CalcularCantidadPaginas(CantidadRegistros, pageSize);
+
+            for (int page = 0; page < CantidadDePaginas; page++)
+            {
+                Console.Clear();
+                Console.WriteLine("LISTADO DE ZAPATOS:");
+                Console.WriteLine($"Página: {page + 1}");
+                var shoesPaginados = servicio?.GetListaPaginadaOrdenadaFiltrada(page,pageSize);
+
+                var tabla = new ConsoleTable("ID", "MARCA", "DEPORTE", "GENERO", "MODELO", "DESCRIPCION", "PRECIO");
+
+                if (shoesPaginados != null)
+                {
+                    foreach (var s in shoesPaginados)
+                    {
+                        tabla.AddRow(s.ShoeId, s.Brand.BrandName, s.Sport.SportName, s.Genre.GenreName, s.Model, s.Description, s.Price);
+                    }
+                }
+
+                tabla.Options.EnableCount = false;
+                tabla.Write();
+                Console.WriteLine($"Cantidad: {servicio?.GetCantidad()}");
+                ConsoleExtensions.Enter();
+            }
+        }
+
+
+        private static void MostrarZapatosPorMarca(decimal? precioMinimo = null, decimal? precioMaximo = null)
         {
             MostrarMarcas();
-            var servicioMarcas = servicioProvider?.GetService<IBrandsService>();      
-
-            //var lista= (servicioMarcas?.GetBrands().Select(b => b.BrandId.ToString()));
-
-            var brandId = ConsoleExtensions.ReadInt("Ingrese el ID de la marca para ver los zapatos disponibles:");
+            var servicioMarcas = servicioProvider?.GetService<IBrandsService>();
+            var servicioShoes = servicioProvider?.GetService<IShoesService>();
+            var brandId = ConsoleExtensions.ReadInt("Ingrese el ID de la marca para ver los zapatos disponibles: ");
             
             Brand? brand = servicioMarcas?.GetBrandPorId(brandId);
 
+            var CantidadRegistros = servicioShoes.GetCantidadFiltrada(brand, null, null, null, precioMaximo, precioMinimo);
+            var CantidadDePaginas = CalcularCantidadPaginas(CantidadRegistros, pageSize);
+
             if (brand != null)
             {
-                List<Shoe>? shoes;
+                List<Shoe>? shoes = null;
 
-                if (precioDesde != null && precioHasta != null)
+                if (precioMinimo != null && precioMaximo != null)
                 {
-                    shoes = servicioMarcas?.GetShoesForPrice(brand, precioDesde, precioHasta);
+                    for (int page = 0; page < CantidadDePaginas; page++)
+                    {
+                        Console.Clear();
+                        Console.WriteLine("LISTADO DE ZAPATOS");
+                        Console.WriteLine($"Página: {page + 1}");
+                        shoes = servicioShoes?.GetListaPaginadaOrdenadaFiltrada(page, pageSize, null, brand, null, null, null, precioMaximo, precioMinimo);
+                        if (shoes != null)
+                        {
+                            TablaDeZapatos(shoes);
+                            Console.WriteLine($"Cantidad: {CantidadRegistros}");
+                            ConsoleExtensions.Enter();
+
+                        }
+                        else
+                        {
+                            Console.WriteLine($"No existen zapatos de la marca {brand.BrandId} con precio entre ${precioMinimo} y ${precioMaximo}");
+                        }
+                    }
                 }
                 else
                 {
                     shoes = servicioMarcas?.GetShoes(brand);
+                    TablaDeZapatos(shoes);
+                    Console.WriteLine($"Cantidad: {servicioShoes?.GetCantidad()}");
+
+                }
+
+            }
+            else
+            {
+                Console.WriteLine("La marca que ha seleccionado no existe.");
+            }
+
+        }
+
+        private static void TablaDeZapatos(List<Shoe>? shoes)
+        {
+            var tabla = new ConsoleTable("ID", "MARCA", "DEPORTE", "GENERO", "MODELO", "DESCRIPCION", "PRECIO");
+
+            foreach (var s in shoes)
+            {
+                tabla.AddRow(s.ShoeId,
+                    s.Brand.BrandName,
+                    s.Sport.SportName,
+                    s.Genre.GenreName,
+                    s.Model, s.Description,
+                    s.Price);
+            }
+            tabla.Options.EnableCount = false;
+            tabla.Write();
+        }
+
+        private static void MostrarZapatosPorDeporte(decimal? precioMinimo = null, decimal? precioMaximo = null)
+        {
+            MostrarDeportes();
+            var servicioDeportes = servicioProvider?.GetService<ISportsService>();
+            var servicioShoes = servicioProvider?.GetService<IShoesService>();
+
+            var sportId = ConsoleExtensions.ReadInt("Ingrese el ID del deporte para ver los zapatos disponibles:");
+
+            Sport? sport = servicioDeportes?.GetSportPorId(sportId);
+
+            if (sport != null)
+            {
+                List<Shoe>? shoes;
+
+                if (precioMinimo != null && precioMaximo != null)
+                {
+
+                    shoes = servicioShoes?.GetListaPaginadaOrdenadaFiltrada(0, 0, 0, null, sport, null, null, precioMaximo, precioMinimo);
+                }
+                else
+                {
+                    shoes = servicioDeportes?.GetShoes(sport);
 
                 }
 
@@ -387,52 +542,6 @@ namespace TP01EF2024.Consola
                     var tabla = new ConsoleTable("ID", "MARCA", "DEPORTE", "GENERO", "MODELO", "DESCRIPCION", "PRECIO");
 
                     foreach (var s in shoes)
-                        {
-                            tabla.AddRow(s.ShoeId, 
-                                s.Brand.BrandName, 
-                                s.Sport.SportName, 
-                                s.Genre.GenreName, 
-                                s.Model, s.Description, 
-                                s.Price);
-                        }
-                    tabla.Options.EnableCount = false;
-                    tabla.Write();
-
-                }
-                else
-                {
-                    Console.WriteLine($"No existen zapatos de la marca {brand.BrandId} con precio entre ${precioDesde} y ${precioHasta}");
-                }
-
-
-            }
-            else
-            {
-                Console.WriteLine("La marca que ha seleccionado no existe.");
-            }
-
-        }
-
-        private static void MostrarZapatosPorDeporte()
-        {
-            MostrarDeportes();
-            var servicioDeportes = servicioProvider?.GetService<ISportsService>();
-
-            var sportId = ConsoleExtensions.ReadInt("Ingrese el ID del deporte para ver los zapatos disponibles:");
-
-            Sport? sport = servicioDeportes?.GetSportPorId(sportId);
-
-            if (sport != null)
-            {
-
-                List<Shoe>? shoes = servicioDeportes?.GetShoes(sport);
-
-                Console.WriteLine("Listado de Zapatos");
-
-                var tabla = new ConsoleTable("ID", "MARCA", "DEPORTE", "GENERO", "MODELO", "DESCRIPCION", "PRECIO");
-                if (shoes != null)
-                {
-                    foreach (var s in shoes)
                     {
                         tabla.AddRow(s.ShoeId,
                             s.Brand.BrandName,
@@ -444,6 +553,10 @@ namespace TP01EF2024.Consola
                     tabla.Options.EnableCount = false;
                     tabla.Write();
 
+                }
+                else
+                {
+                    Console.WriteLine($"No existen zapatos del deporte {sport.SportName} con precio entre ${precioMinimo} y ${precioMaximo}");
                 }
 
 
@@ -453,12 +566,14 @@ namespace TP01EF2024.Consola
                 Console.WriteLine("El deporte que ha seleccionado no existe.");
             }
 
+
         }
 
-        private static void MostrarZapatosPorGenero()
+        private static void MostrarZapatosPorGenero(decimal? precioMinimo = null, decimal? precioMaximo = null)
         {
             MostrarGeneros();
             var servicioGeneros = servicioProvider?.GetService<IGenresService>();
+            var servicioShoes = servicioProvider?.GetService<IShoesService>();
 
             var genreId = ConsoleExtensions.ReadInt("Ingrese el ID del genero para ver los zapatos disponibles:");
 
@@ -466,14 +581,25 @@ namespace TP01EF2024.Consola
 
             if (genre != null)
             {
+                List<Shoe>? shoes;
 
-                List<Shoe>? shoes = servicioGeneros?.GetShoes(genre);
-
-                Console.WriteLine("Listado de Zapatos");
-
-                var tabla = new ConsoleTable("ID", "MARCA", "DEPORTE", "GENERO", "MODELO", "DESCRIPCION", "PRECIO");
-                if (shoes != null)
+                if (precioMinimo != null && precioMaximo != null)
                 {
+
+                    shoes = servicioShoes?.GetListaPaginadaOrdenadaFiltrada(0, 0, 0, null, null, genre, null, precioMaximo, precioMinimo);
+                }
+                else
+                {
+                    shoes = servicioGeneros?.GetShoes(genre);
+
+                }
+
+                if (shoes.Count() != 0)
+                {
+                    Console.WriteLine("Listado de Zapatos");
+
+                    var tabla = new ConsoleTable("ID", "MARCA", "DEPORTE", "GENERO", "MODELO", "DESCRIPCION", "PRECIO");
+
                     foreach (var s in shoes)
                     {
                         tabla.AddRow(s.ShoeId,
@@ -487,6 +613,10 @@ namespace TP01EF2024.Consola
                     tabla.Write();
 
                 }
+                else
+                {
+                    Console.WriteLine($"No existen zapatos del genero {genre.GenreName} con precio entre ${precioMinimo} y ${precioMaximo}");
+                }
 
 
             }
@@ -495,6 +625,81 @@ namespace TP01EF2024.Consola
                 Console.WriteLine("El genero que ha seleccionado no existe.");
             }
 
+
+        }
+
+        private static void MostrarZapatosPorVariasEntidades(string genero, string deporte, string marca)
+        {
+            var servicioGenero = servicioProvider?.GetService<IGenresService>();
+            var servicioDeporte = servicioProvider?.GetService<ISportsService>();
+            var servicioMarca = servicioProvider?.GetService<IBrandsService>();
+            var servicioShoe = servicioProvider?.GetService<IShoesService>();
+            int generoId, deporteId, marcaId;
+            Genre? genre = null;
+            Brand? brand = null;
+            Sport? sport = null;
+
+            if (genero != string.Empty)
+            {
+                MostrarGeneros();
+                generoId = ConsoleExtensions.ReadInt("Ingrese el ID del genero para ver los zapatos disponibles:");
+                genre = servicioGenero?.GetGenrePorId(generoId);
+            }
+            if (deporte != string.Empty)
+            {
+                MostrarDeportes();
+                deporteId = ConsoleExtensions.ReadInt("Ingrese el ID del deporte para ver los zapatos disponibles:");
+                sport = servicioDeporte?.GetSportPorId(deporteId);
+            }
+            if (marca != string.Empty)
+            {
+                MostrarMarcas();
+                marcaId = ConsoleExtensions.ReadInt("Ingrese el ID de la marca para ver los zapatos disponibles:");
+                brand = servicioMarca?.GetBrandPorId(marcaId);
+            }
+
+            if (genre != null || sport != null || brand != null)
+            {
+                List<Shoe>? shoes = servicioShoe?.GetListaPaginadaOrdenadaFiltrada(0, 0, 0, brand, sport, genre, null, null, null);
+                if (shoes.Count() != 0)
+                {
+                    Console.WriteLine("Listado de Zapatos");
+
+                    var tabla = new ConsoleTable("ID", "MARCA", "DEPORTE", "GENERO", "MODELO", "DESCRIPCION", "PRECIO");
+
+                    foreach (var s in shoes)
+                    {
+                        tabla.AddRow(s.ShoeId,
+                            s.Brand.BrandName,
+                            s.Sport.SportName,
+                            s.Genre.GenreName,
+                            s.Model, s.Description,
+                            s.Price);
+                    }
+                    tabla.Options.EnableCount = false;
+                    tabla.Write();
+
+                }
+                else
+                {
+                    Console.WriteLine($"No existen zapatos con el filtro aplicado.");
+                }
+
+            }
+            else if (genre is null)
+            {
+                Console.WriteLine("El genero que ha seleccioando no existe");
+            }
+            else if (sport is null)
+            {
+                Console.WriteLine("El deporte que ha seleccioando no existe");
+
+            }
+            else if (brand is null)
+            {
+                Console.WriteLine("La marca que ha seleccioando no existe");
+
+            }
         }
 
         //GENRES
@@ -601,6 +806,39 @@ namespace TP01EF2024.Consola
 
         }
 
+        private static void MostrarGenerosPaginados()
+        {
+            var servicio = servicioProvider?.GetService<IGenresService>();
+            var genres = servicio?.GetGenres();
+
+            var CantidadRegistros = servicio?.GetCantidad() ?? 0;
+            var CantidadDePaginas = CalcularCantidadPaginas(CantidadRegistros, pageSize);
+
+            for (int page = 0; page < CantidadDePaginas; page++)
+            {
+                Console.Clear();
+                Console.WriteLine("LISTADO DE GENEROS:");
+                Console.WriteLine($"Página: {page + 1}");
+                var genresPaginados = servicio?.GetGenresPaginadosOrdenados(page, pageSize);
+
+
+                var tabla = new ConsoleTable("ID", "GENERO");
+
+                if (genresPaginados != null)
+                {
+                    foreach (var g in genresPaginados)
+                    {
+                        tabla.AddRow(g.GenreId, g.GenreName);
+                    }
+                }
+
+                tabla.Options.EnableCount = false;
+                tabla.Write();
+                Console.WriteLine($"Cantidad: {servicio?.GetCantidad()}");
+                ConsoleExtensions.Enter();
+            }
+        }
+
         private static void MostrarGeneros()
         {
             var servicio = servicioProvider?.GetService<IGenresService>();
@@ -621,6 +859,7 @@ namespace TP01EF2024.Consola
             tabla.Write();
             Console.WriteLine($"Cantidad: {servicio?.GetCantidad()}");
         }
+
 
 
         //SPORTS
@@ -726,6 +965,38 @@ namespace TP01EF2024.Consola
             Thread.Sleep(2000);
 
         }
+
+        private static void MostrarDeportesPaginados()
+        {
+            var servicio = servicioProvider?.GetService<ISportsService>();
+
+            var CantidadRegistros = servicio?.GetCantidad() ?? 0;
+            var CantidadDePaginas = CalcularCantidadPaginas(CantidadRegistros, pageSize);
+
+            for (int page = 0; page < CantidadDePaginas; page++)
+            {
+                Console.Clear();
+                Console.WriteLine("LISTADO DE DEPORTES:");
+                Console.WriteLine($"Página: {page + 1}");
+                var sportsPaginados = servicio?.GetSportsPaginadosOrdenados(page, pageSize);
+
+                var tabla = new ConsoleTable("ID", "GENERO");
+
+                if (sportsPaginados != null)
+                {
+                    foreach (var s in sportsPaginados)
+                    {
+                        tabla.AddRow(s.SportId, s.SportName);
+                    }
+                }
+
+                tabla.Options.EnableCount = false;
+                tabla.Write();
+                Console.WriteLine($"Cantidad: {servicio?.GetCantidad()}");
+                ConsoleExtensions.Enter();
+            }
+        }
+
 
         private static void MostrarDeportes()
         {
@@ -850,6 +1121,37 @@ namespace TP01EF2024.Consola
             Thread.Sleep(2000);
         }
 
+        private static void MostrarColoresPaginados()
+        {
+            var servicio = servicioProvider?.GetService<IColoursService>();
+
+            var CantidadRegistros = servicio?.GetCantidad() ?? 0;
+            var CantidadDePaginas = CalcularCantidadPaginas(CantidadRegistros, pageSize);
+
+            for (int page = 0; page < CantidadDePaginas; page++)
+            {
+                Console.Clear();
+                Console.WriteLine("LISTADO DE COLORES:");
+                Console.WriteLine($"Página: {page + 1}");
+                var coloursPaginados = servicio?.GetColoursPaginadosOrdenados(page, pageSize);
+
+                var tabla = new ConsoleTable("ID", "COLOR");
+
+                if (coloursPaginados != null)
+                {
+                    foreach (var c in coloursPaginados)
+                    {
+                        tabla.AddRow(c.ColourId, c.ColourName);
+                    }
+                }
+
+                tabla.Options.EnableCount = false;
+                tabla.Write();
+                Console.WriteLine($"Cantidad: {servicio?.GetCantidad()}");
+                ConsoleExtensions.Enter();
+            }
+        }
+
         private static void MostrarColores()
         {
             var servicio = servicioProvider?.GetService<IColoursService>();
@@ -972,6 +1274,37 @@ namespace TP01EF2024.Consola
             Thread.Sleep(2000);
         }
 
+        private static void MostrarMarcasPaginadas()
+        {
+            var servicio = servicioProvider?.GetService<IBrandsService>();
+
+            var CantidadRegistros = servicio?.GetCantidad() ?? 0;
+            var CantidadDePaginas = CalcularCantidadPaginas(CantidadRegistros, pageSize);
+
+            for (int page = 0; page < CantidadDePaginas; page++)
+            {
+                Console.Clear();
+                Console.WriteLine("LISTADO DE MARCAS:");
+                Console.WriteLine($"Página: {page + 1}");
+                var brandsPaginados = servicio?.GetBrandsPaginadosOrdenados(page, pageSize);
+
+                var tabla = new ConsoleTable("ID", "MARCA");
+
+                if (brandsPaginados != null)
+                {
+                    foreach (var b in brandsPaginados)
+                    {
+                        tabla.AddRow(b.BrandId, b.BrandName);
+                    }
+                }
+
+                tabla.Options.EnableCount = false;
+                tabla.Write();
+                Console.WriteLine($"Cantidad: {servicio?.GetCantidad()}");
+                ConsoleExtensions.Enter();
+            }
+        }
+
         private static void MostrarMarcas()
         {
             var servicio = servicioProvider?.GetService<IBrandsService>();
@@ -991,6 +1324,23 @@ namespace TP01EF2024.Consola
             tabla.Options.EnableCount = false;
             tabla.Write();
             Console.WriteLine($"Cantidad: {servicio?.GetCantidad()}");
+        }
+
+        //PAGINADO
+        private static int CalcularCantidadPaginas(int cantidadRegistros, int cantidadPorPagina)
+        {
+            if (cantidadRegistros < cantidadPorPagina)
+            {
+                return 1;
+            }
+            else if (cantidadRegistros % cantidadPorPagina == 0)
+            {
+                return cantidadRegistros / cantidadPorPagina;
+            }
+            else
+            {
+                return cantidadRegistros / cantidadPorPagina + 1;
+            }
         }
     }
 }

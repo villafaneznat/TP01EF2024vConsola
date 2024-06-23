@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TP01EF2024.Entidades;
+using TP01EF2024.Entidades.Enums;
 
 namespace TP01EF2024.Datos.Interfaces
 {
@@ -18,6 +19,7 @@ namespace TP01EF2024.Datos.Interfaces
         List<Brand> GetBrands();
         int GetCantidad();
         List<Shoe>? GetShoes(Brand brand);
-        List<Shoe>? GetShoesForPrice(Brand brand, decimal? precioDesde, decimal? precioHasta);
+        List<Brand> GetBrandsPaginadosOrdenados(int page, int pageSize, Orden? orden = null);
+
     }
 }

@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using TP01EF2024.Datos.Interfaces;
 using TP01EF2024.Entidades;
+using TP01EF2024.Entidades.Enums;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace TP01EF2024.Datos.Repositorios
 {
@@ -75,5 +77,112 @@ namespace TP01EF2024.Datos.Repositorios
             return _context.Shoes.Count();
         }
 
+        public List<Shoe> GetListaPaginadaOrdenadaFiltrada(
+            int page, 
+            int pageSize, 
+            Orden? orden = null, 
+            Brand? brand = null,
+            Sport? sport = null, 
+            Genre? genre = null, 
+            Colour? colour = null,
+            decimal? maximo = null, 
+            decimal? minimo = null)
+        {
+            IQueryable<Shoe> query = _context.Shoes
+                .Include(s => s.Brand)
+                .Include(s => s.Sport)
+                .Include(s => s.Genre)
+                .AsNoTracking();
+
+            // FILTROS
+            if (brand != null)
+            {
+                query = query
+                    .Where(s => s.BrandId == brand.BrandId);
+            }
+            if (sport != null)
+            {
+                query = query
+                    .Where(s => s.SportId == sport.SportId);
+            }
+            if (genre != null)
+            {
+                query = query
+                    .Where(s => s.GenreId == genre.GenreId);
+            }
+
+            //ORDEN
+            if (orden != null)
+            {
+                switch (orden)
+                {
+                    case Orden.AZ:
+                        query = query.OrderBy(s => s.Model);
+                        break;
+                    case Orden.ZA:
+                        query = query.OrderByDescending(s => s.Model);
+                        break;
+                    case Orden.MenorPrecio:
+                        query = query.OrderBy(s => s.Price);
+                        break;
+                    case Orden.MayorPrecio:
+                        query = query.OrderByDescending(s => s.Price);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            //PRECIO
+            if (maximo != null && minimo != null)
+            {
+                query = query
+                    .Where(s => s.Price <= maximo)
+                    .Where(s => s.Price >= minimo);
+            }
+
+            //PAGINADO
+            List<Shoe> listaPaginada = query.AsNoTracking()
+                .Skip(page * pageSize)//Saltea estos registros
+                .Take(pageSize)//Muestra estos
+                .ToList();
+
+            return listaPaginada;
+        }
+
+        public int GetCantidadFiltrada(Brand? brand = null,
+            Sport? sport = null,
+            Genre? genre = null,
+            Colour? colour = null,
+            decimal? maximo = null,
+            decimal? minimo = null)
+        {
+            IQueryable<Shoe> query = _context.Shoes.AsNoTracking();
+            // FILTROS
+            if (brand != null)
+            {
+                query = query
+                    .Where(s => s.BrandId == brand.BrandId);
+            }
+            if (sport != null)
+            {
+                query = query
+                    .Where(s => s.SportId == sport.SportId);
+            }
+            if (genre != null)
+            {
+                query = query
+                    .Where(s => s.GenreId == genre.GenreId);
+            }
+            //PRECIO
+            if (maximo != null && minimo != null)
+            {
+                query = query
+                    .Where(s => s.Price <= maximo)
+                    .Where(s => s.Price >= minimo);
+            }
+
+            return query.Count();
+        }
     }
 }

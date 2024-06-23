@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TP01EF2024.Datos.Interfaces;
 using TP01EF2024.Entidades;
+using TP01EF2024.Entidades.Enums;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace TP01EF2024.Datos.Repositorios
@@ -57,6 +58,36 @@ namespace TP01EF2024.Datos.Repositorios
             return _context.Brands.OrderBy(b => b.BrandId).AsNoTracking().ToList();
         }
 
+        public List<Brand> GetBrandsPaginadosOrdenados(int page, int pageSize, Orden? orden = null)
+        {
+            IQueryable<Brand> query = _context.Brands.AsNoTracking();
+
+            //ORDEN
+            if (orden != null)
+            {
+                switch (orden)
+                {
+                    case Orden.AZ:
+                        query = query.OrderBy(b => b.BrandName);
+                        break;
+                    case Orden.ZA:
+                        query = query.OrderByDescending(b => b.BrandName);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            //PAGINADO
+            List<Brand> listaPaginada = query.AsNoTracking()
+                .Skip(page * pageSize) //Saltea estos registros
+                .Take(pageSize) //Muestra estos
+                .ToList();
+
+            return listaPaginada;
+
+        }
+
         public int GetCantidad()
         {
             return _context.Brands.Count();
@@ -71,26 +102,5 @@ namespace TP01EF2024.Datos.Repositorios
                 Where(s=> s.BrandId == brand.BrandId).ToList();
         }
 
-        public List<Shoe>? GetShoesForPrice(Brand brand, decimal? precioDesde, decimal? precioHasta)
-        {
-            var query =  _context.Shoes.
-                 Include(s => s.Brand).
-                 Include(s => s.Sport).
-                 Include(s => s.Genre).
-                 Where(s => s.BrandId == brand.BrandId);
-
-            if (precioDesde.HasValue)
-            {
-                query = query.Where(s => s.Price >= precioDesde.Value);
-            }
-
-            if (precioHasta.HasValue)
-            {
-                query = query.Where(s => s.Price <= precioHasta.Value);
-            }
-
-            return query.ToList();
-
-        }
     }
 }

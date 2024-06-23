@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using TP01EF2024.Datos.Interfaces;
 using TP01EF2024.Datos.Migrations;
 using TP01EF2024.Entidades;
+using TP01EF2024.Entidades.Enums;
 
 namespace TP01EF2024.Datos.Repositorios
 {
@@ -63,6 +64,35 @@ namespace TP01EF2024.Datos.Repositorios
         public List<Colour> GetColours()
         {
             return _context.Colours.OrderBy(c => c.ColourId).AsNoTracking().ToList();
+        }
+
+        public List<Colour> GetColoursPaginadosOrdenados(int page, int pageSize, Orden? orden = null)
+        {
+            IQueryable<Colour> query = _context.Colours.AsNoTracking();
+
+            //ORDEN
+            if (orden != null)
+            {
+                switch (orden)
+                {
+                    case Orden.AZ:
+                        query = query.OrderBy(c => c.ColourName);
+                        break;
+                    case Orden.ZA:
+                        query = query.OrderByDescending(c => c.ColourName);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            //PAGINADO
+            List<Colour> listaPaginada = query.AsNoTracking()
+                .Skip(page * pageSize) //Saltea estos registros
+                .Take(pageSize) //Muestra estos
+                .ToList();
+            return listaPaginada;
+
         }
     }
 }

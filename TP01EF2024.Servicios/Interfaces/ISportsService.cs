@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TP01EF2024.Entidades;
+using TP01EF2024.Entidades.Enums;
 
 namespace TP01EF2024.Servicios.Interfaces
 {
@@ -17,5 +18,7 @@ namespace TP01EF2024.Servicios.Interfaces
         List<Sport> GetSports();
         int GetCantidad();
         List<Shoe>? GetShoes(Sport sport);
+        List<Sport> GetSportsPaginadosOrdenados(int page, int pageSize, Orden? orden = null);
+
     }
 }

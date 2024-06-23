@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TP01EF2024.Datos.Interfaces;
 using TP01EF2024.Entidades;
+using TP01EF2024.Entidades.Enums;
 using TP01EF2024.Servicios.Interfaces;
 
 namespace TP01EF2024.Servicios.Servicios
@@ -97,6 +98,11 @@ namespace TP01EF2024.Servicios.Servicios
 
                 throw;
             }
+        }
+
+        public List<Colour> GetColoursPaginadosOrdenados(int page, int pageSize, Orden? orden = null)
+        {
+            return _repository.GetColoursPaginadosOrdenados(page, pageSize, orden);
         }
 
         public void Guardar(Colour colour)

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TP01EF2024.Entidades;
+using TP01EF2024.Entidades.Enums;
 
 namespace TP01EF2024.Servicios.Interfaces
 {
@@ -16,6 +17,8 @@ namespace TP01EF2024.Servicios.Interfaces
         int GetCantidad();
         Colour GetColourPorId(int id);
         bool EstaRelacionado(Colour colour);
+        List<Colour> GetColoursPaginadosOrdenados(int page, int pageSize, Orden? orden = null);
+
 
     }
 }

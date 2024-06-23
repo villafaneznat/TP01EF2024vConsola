@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TP01EF2024.Datos.Interfaces;
 using TP01EF2024.Entidades;
+using TP01EF2024.Entidades.Enums;
 
 namespace TP01EF2024.Datos.Repositorios
 {
@@ -70,6 +71,35 @@ namespace TP01EF2024.Datos.Repositorios
         public List<Sport> GetSports()
         {
             return _context.Sports.OrderBy(s => s.SportId).ToList();
+        }
+
+        public List<Sport> GetSportsPaginadosOrdenados(int page, int pageSize, Orden? orden = null)
+        {
+            IQueryable<Sport> query = _context.Sports.AsNoTracking();
+
+            //ORDEN
+            if (orden != null)
+            {
+                switch (orden)
+                {
+                    case Orden.AZ:
+                        query = query.OrderBy(s => s.SportName);
+                        break;
+                    case Orden.ZA:
+                        query = query.OrderByDescending(s => s.SportName);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            //PAGINADO
+            List<Sport> listaPaginada = query.AsNoTracking()
+                .Skip(page * pageSize) //Saltea estos registros
+                .Take(pageSize) //Muestra estos
+                .ToList();
+
+            return listaPaginada;
         }
     }
 }
