@@ -14,6 +14,8 @@ namespace TP01EF2024.Entidades
 
         public string BrandName { get; set; } = null!;
 
+        public bool Active { get; set; }
+
         public ICollection<Shoe> Shoes { get; set; } = new List<Shoe>();
 
     }

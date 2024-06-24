@@ -54,9 +54,9 @@ namespace TP01EF2024.Consola
                 Console.WriteLine("21. Ver los Zapatos POR MARCA");
                 Console.WriteLine("22. Ver los Zapatos POR DEPORTE");
                 Console.WriteLine("23. Ver los Zapatos POR GENERO");
-                Console.WriteLine("24. Ver los Zapatos POR MARCA entre 2 precios");
-                Console.WriteLine("25. Ver los Zapatos POR DEPORTE entre 2 precios");
-                Console.WriteLine("26. Ver los Zapatos POR GENERO entre 2 precios");
+                Console.WriteLine("24. Ver los Zapatos POR MARCA entre 2 precios (paginado)");
+                Console.WriteLine("25. Ver los Zapatos POR DEPORTE entre 2 precios (paginado)");
+                Console.WriteLine("26. Ver los Zapatos POR GENERO entre 2 precios (pagindo)");
                 Console.WriteLine("27. Ver los Zapatos POR GENERO y DEPORTE");
                 Console.WriteLine("");
                 Console.WriteLine("28. Ver todas las Marcas paginadas");
@@ -215,7 +215,7 @@ namespace TP01EF2024.Consola
                         break;
                     case "27":
                         Console.Clear();
-                        MostrarZapatosPorVariasEntidades("genero","deporte",string.Empty);
+                        MostrarZapatosPorVariasEntidades("genero", "deporte", string.Empty);
                         ConsoleExtensions.Enter();
                         break;
                     case "28":
@@ -257,21 +257,12 @@ namespace TP01EF2024.Consola
         {
             var servicio = servicioProvider?.GetService<IShoesService>();
             var shoes = servicio?.GetShoes();
-
-            Console.WriteLine("LISTADO DE ZAPATOS:");
-
-            var tabla = new ConsoleTable("ID", "MARCA", "DEPORTE", "GENERO", "MODELO", "DESCRIPCION", "PRECIO");
-
+            Console.WriteLine("LISTADO DE ZAPATOS");
             if (shoes != null)
             {
-                foreach (var s in shoes)
-                {
-                    tabla.AddRow(s.ShoeId, s.Brand.BrandName, s.Sport.SportName, s.Genre.GenreName, s.Model, s.Description, s.Price);
-                }
+                TablaDeZapatos(shoes);
             }
 
-            tabla.Options.EnableCount = false;
-            tabla.Write();
             Console.WriteLine($"Cantidad: {servicio?.GetCantidad()}");
 
         }
@@ -420,25 +411,17 @@ namespace TP01EF2024.Consola
                 Console.Clear();
                 Console.WriteLine("LISTADO DE ZAPATOS:");
                 Console.WriteLine($"Página: {page + 1}");
-                var shoesPaginados = servicio?.GetListaPaginadaOrdenadaFiltrada(page,pageSize);
-
-                var tabla = new ConsoleTable("ID", "MARCA", "DEPORTE", "GENERO", "MODELO", "DESCRIPCION", "PRECIO");
+                var shoesPaginados = servicio?.GetListaPaginadaOrdenadaFiltrada(page, pageSize);
 
                 if (shoesPaginados != null)
                 {
-                    foreach (var s in shoesPaginados)
-                    {
-                        tabla.AddRow(s.ShoeId, s.Brand.BrandName, s.Sport.SportName, s.Genre.GenreName, s.Model, s.Description, s.Price);
-                    }
+                    TablaDeZapatos(shoesPaginados);
                 }
 
-                tabla.Options.EnableCount = false;
-                tabla.Write();
                 Console.WriteLine($"Cantidad: {servicio?.GetCantidad()}");
                 ConsoleExtensions.Enter();
             }
         }
-
 
         private static void MostrarZapatosPorMarca(decimal? precioMinimo = null, decimal? precioMaximo = null)
         {
@@ -446,7 +429,7 @@ namespace TP01EF2024.Consola
             var servicioMarcas = servicioProvider?.GetService<IBrandsService>();
             var servicioShoes = servicioProvider?.GetService<IShoesService>();
             var brandId = ConsoleExtensions.ReadInt("Ingrese el ID de la marca para ver los zapatos disponibles: ");
-            
+
             Brand? brand = servicioMarcas?.GetBrandPorId(brandId);
 
             var CantidadRegistros = servicioShoes.GetCantidadFiltrada(brand, null, null, null, precioMaximo, precioMinimo);
@@ -473,7 +456,7 @@ namespace TP01EF2024.Consola
                         }
                         else
                         {
-                            Console.WriteLine($"No existen zapatos de la marca {brand.BrandId} con precio entre ${precioMinimo} y ${precioMaximo}");
+                            Console.WriteLine($"No existen zapatos de la marca {brand.BrandName} con precio entre ${precioMinimo} y ${precioMaximo}");
                         }
                     }
                 }
@@ -493,23 +476,6 @@ namespace TP01EF2024.Consola
 
         }
 
-        private static void TablaDeZapatos(List<Shoe>? shoes)
-        {
-            var tabla = new ConsoleTable("ID", "MARCA", "DEPORTE", "GENERO", "MODELO", "DESCRIPCION", "PRECIO");
-
-            foreach (var s in shoes)
-            {
-                tabla.AddRow(s.ShoeId,
-                    s.Brand.BrandName,
-                    s.Sport.SportName,
-                    s.Genre.GenreName,
-                    s.Model, s.Description,
-                    s.Price);
-            }
-            tabla.Options.EnableCount = false;
-            tabla.Write();
-        }
-
         private static void MostrarZapatosPorDeporte(decimal? precioMinimo = null, decimal? precioMaximo = null)
         {
             MostrarDeportes();
@@ -520,6 +486,10 @@ namespace TP01EF2024.Consola
 
             Sport? sport = servicioDeportes?.GetSportPorId(sportId);
 
+            var CantidadRegistros = servicioShoes.GetCantidadFiltrada(null, sport, null, null, precioMaximo, precioMinimo);
+            var CantidadDePaginas = CalcularCantidadPaginas(CantidadRegistros, pageSize);
+
+
             if (sport != null)
             {
                 List<Shoe>? shoes;
@@ -527,46 +497,37 @@ namespace TP01EF2024.Consola
                 if (precioMinimo != null && precioMaximo != null)
                 {
 
-                    shoes = servicioShoes?.GetListaPaginadaOrdenadaFiltrada(0, 0, 0, null, sport, null, null, precioMaximo, precioMinimo);
+                    for (int page = 0; page < CantidadDePaginas; page++)
+                    {
+                        Console.Clear();
+                        Console.WriteLine("LISTADO DE ZAPATOS");
+                        Console.WriteLine($"Página: {page + 1}");
+                        shoes = servicioShoes?.GetListaPaginadaOrdenadaFiltrada(page, pageSize, null, null, sport, null, null, precioMaximo, precioMinimo);
+                        if (shoes != null)
+                        {
+                            TablaDeZapatos(shoes);
+                            Console.WriteLine($"Cantidad: {CantidadRegistros}");
+                            ConsoleExtensions.Enter();
+
+                        }
+                        else
+                        {
+                            Console.WriteLine($"No existen zapatos del deporte {sport.SportName} con precio entre ${precioMinimo} y ${precioMaximo}");
+                        }
+
+                    }
                 }
                 else
                 {
                     shoes = servicioDeportes?.GetShoes(sport);
-
+                    TablaDeZapatos(shoes);
+                    Console.WriteLine($"Cantidad: {servicioShoes?.GetCantidad()}");
                 }
-
-                if (shoes.Count() != 0)
-                {
-                    Console.WriteLine("Listado de Zapatos");
-
-                    var tabla = new ConsoleTable("ID", "MARCA", "DEPORTE", "GENERO", "MODELO", "DESCRIPCION", "PRECIO");
-
-                    foreach (var s in shoes)
-                    {
-                        tabla.AddRow(s.ShoeId,
-                            s.Brand.BrandName,
-                            s.Sport.SportName,
-                            s.Genre.GenreName,
-                            s.Model, s.Description,
-                            s.Price);
-                    }
-                    tabla.Options.EnableCount = false;
-                    tabla.Write();
-
-                }
-                else
-                {
-                    Console.WriteLine($"No existen zapatos del deporte {sport.SportName} con precio entre ${precioMinimo} y ${precioMaximo}");
-                }
-
-
             }
             else
             {
                 Console.WriteLine("El deporte que ha seleccionado no existe.");
             }
-
-
         }
 
         private static void MostrarZapatosPorGenero(decimal? precioMinimo = null, decimal? precioMaximo = null)
@@ -579,14 +540,37 @@ namespace TP01EF2024.Consola
 
             Genre? genre = servicioGeneros?.GetGenrePorId(genreId);
 
+            var CantidadRegistros = servicioShoes.GetCantidadFiltrada(null, null, genre, null, precioMaximo, precioMinimo);
+            var CantidadDePaginas = CalcularCantidadPaginas(CantidadRegistros, pageSize);
+
+
             if (genre != null)
             {
-                List<Shoe>? shoes;
+                List<Shoe>? shoes = null;
 
                 if (precioMinimo != null && precioMaximo != null)
                 {
 
-                    shoes = servicioShoes?.GetListaPaginadaOrdenadaFiltrada(0, 0, 0, null, null, genre, null, precioMaximo, precioMinimo);
+                    for (int page = 0; page < CantidadDePaginas; page++)
+                    {
+                        Console.Clear();
+                        Console.WriteLine("LISTADO DE ZAPATOS");
+                        Console.WriteLine($"Página: {page + 1}");
+                        shoes = servicioShoes?.GetListaPaginadaOrdenadaFiltrada(page, pageSize, null, null, null, genre, null, precioMaximo, precioMinimo);
+                        if (shoes != null)
+                        {
+                            TablaDeZapatos(shoes);
+                            Console.WriteLine($"Cantidad: {CantidadRegistros}");
+                            ConsoleExtensions.Enter();
+
+                        }
+                        else
+                        {
+                            Console.WriteLine($"No existen zapatos del genero {genre.GenreId} con precio entre ${precioMinimo} y ${precioMaximo}");
+                        }
+
+                    }
+
                 }
                 else
                 {
@@ -665,19 +649,7 @@ namespace TP01EF2024.Consola
                 {
                     Console.WriteLine("Listado de Zapatos");
 
-                    var tabla = new ConsoleTable("ID", "MARCA", "DEPORTE", "GENERO", "MODELO", "DESCRIPCION", "PRECIO");
-
-                    foreach (var s in shoes)
-                    {
-                        tabla.AddRow(s.ShoeId,
-                            s.Brand.BrandName,
-                            s.Sport.SportName,
-                            s.Genre.GenreName,
-                            s.Model, s.Description,
-                            s.Price);
-                    }
-                    tabla.Options.EnableCount = false;
-                    tabla.Write();
+                    TablaDeZapatos(shoes);
 
                 }
                 else
@@ -701,6 +673,7 @@ namespace TP01EF2024.Consola
 
             }
         }
+
 
         //GENRES
         private static void EliminarGenero()
@@ -1342,5 +1315,25 @@ namespace TP01EF2024.Consola
                 return cantidadRegistros / cantidadPorPagina + 1;
             }
         }
+
+        private static void TablaDeZapatos(List<Shoe>? shoes)
+        {
+            var tabla = new ConsoleTable("ID", "MARCA", "DEPORTE", "GENERO", "MODELO", "DESCRIPCION", "PRECIO");
+
+            foreach (var s in shoes)
+            {
+                tabla.AddRow(s.ShoeId,
+                    s.Brand.BrandName,
+                    s.Sport.SportName,
+                    s.Genre.GenreName,
+                    s.Model, s.Description,
+                    s.Price);
+            }
+            tabla.Options.EnableCount = false;
+            tabla.Write();
+        }
+
     }
+
+
 }

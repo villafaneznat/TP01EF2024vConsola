@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TP01EF2024.Datos;
 
@@ -10,9 +11,11 @@ using TP01EF2024.Datos;
 namespace TP01EF2024.Datos.Migrations
 {
     [DbContext(typeof(TP01DbContext))]
-    partial class TP01DbContextModelSnapshot : ModelSnapshot
+    [Migration("20240624145023_CorreccionesTablaSizes")]
+    partial class CorreccionesTablaSizes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -28,11 +31,6 @@ namespace TP01EF2024.Datos.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BrandId"));
-
-                    b.Property<bool>("Active")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
 
                     b.Property<string>("BrandName")
                         .IsRequired()
@@ -50,19 +48,16 @@ namespace TP01EF2024.Datos.Migrations
                         new
                         {
                             BrandId = 1,
-                            Active = true,
                             BrandName = "Vans"
                         },
                         new
                         {
                             BrandId = 2,
-                            Active = true,
                             BrandName = "Adidas"
                         },
                         new
                         {
                             BrandId = 3,
-                            Active = true,
                             BrandName = "Topper"
                         });
                 });
@@ -74,11 +69,6 @@ namespace TP01EF2024.Datos.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ColourId"));
-
-                    b.Property<bool>("Active")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
 
                     b.Property<string>("ColourName")
                         .IsRequired()
@@ -96,19 +86,16 @@ namespace TP01EF2024.Datos.Migrations
                         new
                         {
                             ColourId = 1,
-                            Active = true,
                             ColourName = "Rojo"
                         },
                         new
                         {
                             ColourId = 2,
-                            Active = true,
                             ColourName = "Negro"
                         },
                         new
                         {
                             ColourId = 3,
-                            Active = true,
                             ColourName = "Blanco"
                         });
                 });
@@ -159,11 +146,6 @@ namespace TP01EF2024.Datos.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ShoeId"));
 
-                    b.Property<bool>("Active")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
                     b.Property<int>("BrandId")
                         .HasColumnType("int");
 
@@ -200,7 +182,6 @@ namespace TP01EF2024.Datos.Migrations
                         new
                         {
                             ShoeId = 1,
-                            Active = true,
                             BrandId = 1,
                             Description = "Vans Deportivas",
                             GenreId = 2,
@@ -211,7 +192,6 @@ namespace TP01EF2024.Datos.Migrations
                         new
                         {
                             ShoeId = 2,
-                            Active = true,
                             BrandId = 2,
                             Description = "Botines Femeninos",
                             GenreId = 1,
@@ -222,7 +202,6 @@ namespace TP01EF2024.Datos.Migrations
                         new
                         {
                             ShoeId = 3,
-                            Active = true,
                             BrandId = 3,
                             Description = "Importados",
                             GenreId = 3,
@@ -270,9 +249,8 @@ namespace TP01EF2024.Datos.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SizeId"));
 
-                    b.Property<decimal>("SizeNumber")
-                        .HasPrecision(3, 1)
-                        .HasColumnType("decimal (3, 1)");
+                    b.Property<double>("SizeNumber")
+                        .HasColumnType("float");
 
                     b.HasKey("SizeId");
 
@@ -285,227 +263,227 @@ namespace TP01EF2024.Datos.Migrations
                         new
                         {
                             SizeId = 1,
-                            SizeNumber = 28m
+                            SizeNumber = 28.0
                         },
                         new
                         {
                             SizeId = 2,
-                            SizeNumber = 28.5m
+                            SizeNumber = 28.5
                         },
                         new
                         {
                             SizeId = 3,
-                            SizeNumber = 29.0m
+                            SizeNumber = 29.0
                         },
                         new
                         {
                             SizeId = 4,
-                            SizeNumber = 29.5m
+                            SizeNumber = 29.5
                         },
                         new
                         {
                             SizeId = 5,
-                            SizeNumber = 30.0m
+                            SizeNumber = 30.0
                         },
                         new
                         {
                             SizeId = 6,
-                            SizeNumber = 30.5m
+                            SizeNumber = 30.5
                         },
                         new
                         {
                             SizeId = 7,
-                            SizeNumber = 31.0m
+                            SizeNumber = 31.0
                         },
                         new
                         {
                             SizeId = 8,
-                            SizeNumber = 31.5m
+                            SizeNumber = 31.5
                         },
                         new
                         {
                             SizeId = 9,
-                            SizeNumber = 32.0m
+                            SizeNumber = 32.0
                         },
                         new
                         {
                             SizeId = 10,
-                            SizeNumber = 32.5m
+                            SizeNumber = 32.5
                         },
                         new
                         {
                             SizeId = 11,
-                            SizeNumber = 33.0m
+                            SizeNumber = 33.0
                         },
                         new
                         {
                             SizeId = 12,
-                            SizeNumber = 33.5m
+                            SizeNumber = 33.5
                         },
                         new
                         {
                             SizeId = 13,
-                            SizeNumber = 34.0m
+                            SizeNumber = 34.0
                         },
                         new
                         {
                             SizeId = 14,
-                            SizeNumber = 34.5m
+                            SizeNumber = 34.5
                         },
                         new
                         {
                             SizeId = 15,
-                            SizeNumber = 35.0m
+                            SizeNumber = 35.0
                         },
                         new
                         {
                             SizeId = 16,
-                            SizeNumber = 35.5m
+                            SizeNumber = 35.5
                         },
                         new
                         {
                             SizeId = 17,
-                            SizeNumber = 36.0m
+                            SizeNumber = 36.0
                         },
                         new
                         {
                             SizeId = 18,
-                            SizeNumber = 36.5m
+                            SizeNumber = 36.5
                         },
                         new
                         {
                             SizeId = 19,
-                            SizeNumber = 37.0m
+                            SizeNumber = 37.0
                         },
                         new
                         {
                             SizeId = 20,
-                            SizeNumber = 37.5m
+                            SizeNumber = 37.5
                         },
                         new
                         {
                             SizeId = 21,
-                            SizeNumber = 38.0m
+                            SizeNumber = 38.0
                         },
                         new
                         {
                             SizeId = 22,
-                            SizeNumber = 38.5m
+                            SizeNumber = 38.5
                         },
                         new
                         {
                             SizeId = 23,
-                            SizeNumber = 39.0m
+                            SizeNumber = 39.0
                         },
                         new
                         {
                             SizeId = 24,
-                            SizeNumber = 39.5m
+                            SizeNumber = 39.5
                         },
                         new
                         {
                             SizeId = 25,
-                            SizeNumber = 40.0m
+                            SizeNumber = 40.0
                         },
                         new
                         {
                             SizeId = 26,
-                            SizeNumber = 40.5m
+                            SizeNumber = 40.5
                         },
                         new
                         {
                             SizeId = 27,
-                            SizeNumber = 41.0m
+                            SizeNumber = 41.0
                         },
                         new
                         {
                             SizeId = 28,
-                            SizeNumber = 41.5m
+                            SizeNumber = 41.5
                         },
                         new
                         {
                             SizeId = 29,
-                            SizeNumber = 42.0m
+                            SizeNumber = 42.0
                         },
                         new
                         {
                             SizeId = 30,
-                            SizeNumber = 42.5m
+                            SizeNumber = 42.5
                         },
                         new
                         {
                             SizeId = 31,
-                            SizeNumber = 43.0m
+                            SizeNumber = 43.0
                         },
                         new
                         {
                             SizeId = 32,
-                            SizeNumber = 43.5m
+                            SizeNumber = 43.5
                         },
                         new
                         {
                             SizeId = 33,
-                            SizeNumber = 44.0m
+                            SizeNumber = 44.0
                         },
                         new
                         {
                             SizeId = 34,
-                            SizeNumber = 44.5m
+                            SizeNumber = 44.5
                         },
                         new
                         {
                             SizeId = 35,
-                            SizeNumber = 45.0m
+                            SizeNumber = 45.0
                         },
                         new
                         {
                             SizeId = 36,
-                            SizeNumber = 45.5m
+                            SizeNumber = 45.5
                         },
                         new
                         {
                             SizeId = 37,
-                            SizeNumber = 46.0m
+                            SizeNumber = 46.0
                         },
                         new
                         {
                             SizeId = 38,
-                            SizeNumber = 46.5m
+                            SizeNumber = 46.5
                         },
                         new
                         {
                             SizeId = 39,
-                            SizeNumber = 47.0m
+                            SizeNumber = 47.0
                         },
                         new
                         {
                             SizeId = 40,
-                            SizeNumber = 47.5m
+                            SizeNumber = 47.5
                         },
                         new
                         {
                             SizeId = 41,
-                            SizeNumber = 48.0m
+                            SizeNumber = 48.0
                         },
                         new
                         {
                             SizeId = 42,
-                            SizeNumber = 48.5m
+                            SizeNumber = 48.5
                         },
                         new
                         {
                             SizeId = 43,
-                            SizeNumber = 49.0m
+                            SizeNumber = 49.0
                         },
                         new
                         {
                             SizeId = 44,
-                            SizeNumber = 49.5m
+                            SizeNumber = 49.5
                         },
                         new
                         {
                             SizeId = 45,
-                            SizeNumber = 50.0m
+                            SizeNumber = 50.0
                         });
                 });
 
@@ -516,11 +494,6 @@ namespace TP01EF2024.Datos.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SportId"));
-
-                    b.Property<bool>("Active")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
 
                     b.Property<string>("SportName")
                         .IsRequired()
@@ -538,19 +511,16 @@ namespace TP01EF2024.Datos.Migrations
                         new
                         {
                             SportId = 1,
-                            Active = true,
                             SportName = "Futbol"
                         },
                         new
                         {
                             SportId = 2,
-                            Active = true,
                             SportName = "Tenis"
                         },
                         new
                         {
                             SportId = 3,
-                            Active = true,
                             SportName = "Basquet"
                         });
                 });

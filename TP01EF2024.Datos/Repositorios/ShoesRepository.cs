@@ -45,11 +45,13 @@ namespace TP01EF2024.Datos.Repositorios
             {
                 return _context.Shoes.Any(s => s.BrandId == shoe.BrandId 
                                             && s.SportId == shoe.SportId 
-                                            && s.GenreId == shoe.GenreId);
+                                            && s.GenreId == shoe.GenreId
+                                            && s.Model == shoe.Model);
             }
             return _context.Shoes.Any(s => s.BrandId == shoe.BrandId 
                                         && s.SportId == shoe.SportId 
-                                        && s.GenreId == shoe.GenreId 
+                                        && s.GenreId == shoe.GenreId
+                                        && s.Model == shoe.Model
                                         && s.ShoeId == shoe.ShoeId);
         }
 

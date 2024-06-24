@@ -26,6 +26,8 @@ namespace TP01EF2024.Datos
         public DbSet<Colour> Colours { get; set; }
         public DbSet<Shoe> Shoes { get; set; }
         public DbSet<ShoeColour> ShoesColours { get; set; }
+        public DbSet<ShoeSize> ShoesSizes { get; set; }
+        public DbSet<Size> Sizes { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -42,17 +44,20 @@ namespace TP01EF2024.Datos
                 new Brand
                 {
                     BrandId = 1,
-                    BrandName = "Vans"
+                    BrandName = "Vans",
+                    Active = true
                 },
                 new Brand
                 {
                     BrandId = 2,
-                    BrandName = "Adidas"
+                    BrandName = "Adidas",
+                    Active = true
                 },
                 new Brand
                 {
                     BrandId = 3,
-                    BrandName = "Topper"
+                    BrandName = "Topper",
+                    Active = true
                 },
             };
 
@@ -80,17 +85,20 @@ namespace TP01EF2024.Datos
                 new Sport
                 {
                     SportId = 1,
-                    SportName = "Futbol"
+                    SportName = "Futbol",
+                    Active = true
                 },
                 new Sport
                 {
                     SportId = 2,
-                    SportName = "Tenis"
+                    SportName = "Tenis",
+                    Active = true
                 },
                 new Sport
                 {
                     SportId = 3,
-                    SportName = "Basquet"
+                    SportName = "Basquet",
+                    Active = true
                 },
             };
 
@@ -99,19 +107,35 @@ namespace TP01EF2024.Datos
                 new Colour
                 {
                     ColourId = 1,
-                    ColourName = "Rojo"
+                    ColourName = "Rojo",
+                    Active = true
                 },
                 new Colour
                 {
                     ColourId = 2,
-                    ColourName = "Negro"
+                    ColourName = "Negro",
+                    Active = true
                 },
                 new Colour
                 {
                     ColourId = 3,
-                    ColourName = "Blanco"
+                    ColourName = "Blanco",
+                    Active = true
                 },
             };
+
+            var sizes = new List<Size>();
+
+            int sizeId = 1;
+
+            for (decimal i = 28; i <= 50; i += 0.5m)
+            {
+                sizes.Add(new Size
+                {
+                    SizeId = sizeId++,
+                    SizeNumber = i
+                });
+            }
             
             var shoes = new List<Shoe>()
             {
@@ -123,7 +147,8 @@ namespace TP01EF2024.Datos
                     GenreId = 2,
                     Model = "Deportivas",
                     Description = "Vans Deportivas",
-                    Price = 15
+                    Price = 15,
+                    Active = true
                 },
                 new Shoe
                 {
@@ -133,7 +158,8 @@ namespace TP01EF2024.Datos
                     GenreId = 1,
                     Model = "Botines",
                     Description = "Botines Femeninos",
-                    Price = 20
+                    Price = 20,
+                    Active = true
                 },
                 new Shoe
                 {
@@ -143,7 +169,8 @@ namespace TP01EF2024.Datos
                     GenreId = 3,
                     Model = "1982",
                     Description = "Importados",
-                    Price = 35
+                    Price = 35,
+                    Active = true
                 },
             };
 
@@ -152,6 +179,7 @@ namespace TP01EF2024.Datos
                 entity.HasKey(e => e.BrandId);
                 entity.HasIndex(t => t.BrandName).IsUnique();
                 entity.Property(e => e.BrandName).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.Active).IsRequired().HasDefaultValue(true);
                 entity.HasData(brands);
             });
 
@@ -168,6 +196,7 @@ namespace TP01EF2024.Datos
                 entity.HasKey(e => e.SportId);
                 entity.HasIndex(t => t.SportName).IsUnique();
                 entity.Property(e => e.SportName).IsRequired().HasMaxLength(20);
+                entity.Property(e => e.Active).IsRequired().HasDefaultValue(true);
                 entity.HasData(sports);
             });
 
@@ -176,6 +205,7 @@ namespace TP01EF2024.Datos
                 entity.HasKey(e => e.ColourId);
                 entity.HasIndex(t => t.ColourName).IsUnique();
                 entity.Property(e => e.ColourName).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.Active).IsRequired().HasDefaultValue(true);
                 entity.HasData(colours);
             });
 
@@ -188,6 +218,7 @@ namespace TP01EF2024.Datos
                 entity.Property(e => e.Model).IsRequired().HasMaxLength(150);
                 entity.Property(e => e.Price).HasPrecision(10,2);
                 entity.Property(e => e.Description).IsRequired();
+                entity.Property(e => e.Active).IsRequired().HasDefaultValue(true);
                 entity.HasData(shoes);
             });
 
@@ -198,8 +229,27 @@ namespace TP01EF2024.Datos
                 entity.HasOne(sc => sc.Colour).WithMany(c => c.ShoesColours).HasForeignKey(sc => sc.ColourId);
             });
 
+            modelBuilder.Entity<Size>(entity =>
+            {
+                entity.HasKey(s => s.SizeId);
+                entity.HasIndex(s => s.SizeNumber).IsUnique();
+                entity.Property(s => s.SizeNumber).HasColumnType("decimal (3, 1)").HasPrecision(3, 1).IsRequired();
+                entity.HasData(sizes);
+                entity.ToTable("Sizes");
+            });
+
+            modelBuilder.Entity<ShoeSize>(entity =>
+            {
+                entity.HasKey(ss => new { ss.ShoeId, ss.SizeId });
+                entity.HasOne(ss => ss.Shoe).WithMany(s => s.ShoesSizes).HasForeignKey(sc => sc.ShoeId);
+                entity.HasOne(ss => ss.Size).WithMany(s => s.ShoesSizes).HasForeignKey(sc => sc.SizeId);
+                entity.ToTable("ShoesSizes");
+
+            });
+
+
         }
-        
+
 
     }
 }

@@ -22,7 +22,9 @@ namespace TP01EF2024.Entidades
         public string Model { get; set; } = null!;
         public string Description { get; set; } = null!;
         public decimal Price { get; set; }
+        public bool Active { get; set; }
         public ICollection<ShoeColour> ShoesColours { get; set; } = new List<ShoeColour>();
+        public ICollection<ShoeSize> ShoesSizes { get; set; } = new List<ShoeSize>();
 
     }
 }

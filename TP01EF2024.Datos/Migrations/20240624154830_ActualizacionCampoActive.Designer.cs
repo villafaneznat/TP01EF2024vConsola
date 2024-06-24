@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TP01EF2024.Datos;
 
@@ -10,9 +11,11 @@ using TP01EF2024.Datos;
 namespace TP01EF2024.Datos.Migrations
 {
     [DbContext(typeof(TP01DbContext))]
-    partial class TP01DbContextModelSnapshot : ModelSnapshot
+    [Migration("20240624154830_ActualizacionCampoActive")]
+    partial class ActualizacionCampoActive
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
