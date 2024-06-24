@@ -18,6 +18,7 @@ namespace TP01EF2024.Datos.Interfaces
         Colour? GetColourPorId(int id);
         List<Colour> GetColours();
         int GetCantidad();
+        List<Shoe>? GetShoes(Colour colour);
         List<Colour> GetColoursPaginadosOrdenados(int page, int pageSize, Orden? orden = null);
 
 

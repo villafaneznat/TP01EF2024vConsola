@@ -37,7 +37,7 @@ namespace TP01EF2024.Datos.Repositorios
 
         public bool EstaRelacionado(Colour colour)
         {
-            return _context.ShoesColours.Any(cs => cs.ColourId == colour.ColourId);
+            return _context.Shoes.Any(s => s.ColourId == colour.ColourId);
 
         }
 
@@ -93,6 +93,16 @@ namespace TP01EF2024.Datos.Repositorios
                 .ToList();
             return listaPaginada;
 
+        }
+
+        public List<Shoe>? GetShoes(Colour colour)
+        {
+            return _context.Shoes.
+                Include(s => s.Brand).
+                Include(s => s.Sport).
+                Include(s => s.Genre).
+                Include(s => s.Colour).
+                Where(s => s.ColourId == colour.ColourId).ToList();
         }
     }
 }

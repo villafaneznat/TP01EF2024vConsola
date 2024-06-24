@@ -117,9 +117,9 @@ namespace TP01EF2024.Servicios.Servicios
             }
         }
 
-        public List<Shoe> GetListaPaginadaOrdenadaFiltrada(int page, int pageSize, Orden? orden = null, Brand? brand = null, Sport? sport = null, Genre? genre = null, Colour? colour = null, decimal? maximo = null, decimal? minimo = null)
+        public List<Shoe> GetListaPaginadaOrdenadaFiltrada(bool paginar, int page, int pageSize, Orden? orden = null, Brand? brand = null, Sport? sport = null, Genre? genre = null, Colour? colour = null, decimal? maximo = null, decimal? minimo = null)
         {
-            return _repository.GetListaPaginadaOrdenadaFiltrada(page,pageSize,orden,brand,sport,genre,colour,maximo,minimo);
+            return _repository.GetListaPaginadaOrdenadaFiltrada(paginar, page,pageSize,orden,brand,sport,genre,colour,maximo,minimo);
         }
 
         public int GetCantidadFiltrada(Brand? brand = null, Sport? sport = null, Genre? genre = null, Colour? colour = null, decimal? maximo = null, decimal? minimo = null)

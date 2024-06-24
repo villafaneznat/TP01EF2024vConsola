@@ -99,6 +99,7 @@ namespace TP01EF2024.Datos.Repositorios
                 Include(s => s.Brand).
                 Include(s => s.Sport).
                 Include(s => s.Genre).
+                Include(s => s.Colour).
                 Where(s=> s.BrandId == brand.BrandId).ToList();
         }
 

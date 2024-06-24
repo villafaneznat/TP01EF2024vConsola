@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TP01EF2024.Datos;
 
@@ -10,9 +11,11 @@ using TP01EF2024.Datos;
 namespace TP01EF2024.Datos.Migrations
 {
     [DbContext(typeof(TP01DbContext))]
-    partial class TP01DbContextModelSnapshot : ModelSnapshot
+    [Migration("20240624190045_EliminacionTablaShoesColours")]
+    partial class EliminacionTablaShoesColours
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -242,27 +245,15 @@ namespace TP01EF2024.Datos.Migrations
 
             modelBuilder.Entity("TP01EF2024.Entidades.ShoeSize", b =>
                 {
-                    b.Property<int>("ShoeSizeId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ShoeSizeId"));
-
-                    b.Property<int>("QuantityInStock")
-                        .HasColumnType("int");
-
                     b.Property<int>("ShoeId")
                         .HasColumnType("int");
 
                     b.Property<int>("SizeId")
                         .HasColumnType("int");
 
-                    b.HasKey("ShoeSizeId");
+                    b.HasKey("ShoeId", "SizeId");
 
                     b.HasIndex("SizeId");
-
-                    b.HasIndex("ShoeId", "SizeId")
-                        .IsUnique();
 
                     b.ToTable("ShoesSizes", (string)null);
                 });

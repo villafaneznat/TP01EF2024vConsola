@@ -19,6 +19,7 @@ namespace TP01EF2024.Datos.Interfaces
         List<Shoe> GetShoes();
         int GetCantidad();
         List<Shoe> GetListaPaginadaOrdenadaFiltrada(
+            bool paginar,
             int page,
             int pageSize,
             Orden? orden = null,

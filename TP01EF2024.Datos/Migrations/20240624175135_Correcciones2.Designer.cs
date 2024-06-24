@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TP01EF2024.Datos;
 
@@ -10,9 +11,11 @@ using TP01EF2024.Datos;
 namespace TP01EF2024.Datos.Migrations
 {
     [DbContext(typeof(TP01DbContext))]
-    partial class TP01DbContextModelSnapshot : ModelSnapshot
+    [Migration("20240624175135_Correcciones2")]
+    partial class Correcciones2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -167,9 +170,6 @@ namespace TP01EF2024.Datos.Migrations
                     b.Property<int>("BrandId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ColourId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -193,8 +193,6 @@ namespace TP01EF2024.Datos.Migrations
 
                     b.HasIndex("BrandId");
 
-                    b.HasIndex("ColourId");
-
                     b.HasIndex("GenreId");
 
                     b.HasIndex("SportId");
@@ -207,7 +205,6 @@ namespace TP01EF2024.Datos.Migrations
                             ShoeId = 1,
                             Active = true,
                             BrandId = 1,
-                            ColourId = 1,
                             Description = "Vans Deportivas",
                             GenreId = 2,
                             Model = "Deportivas",
@@ -219,7 +216,6 @@ namespace TP01EF2024.Datos.Migrations
                             ShoeId = 2,
                             Active = true,
                             BrandId = 2,
-                            ColourId = 2,
                             Description = "Botines Femeninos",
                             GenreId = 1,
                             Model = "Botines",
@@ -231,7 +227,6 @@ namespace TP01EF2024.Datos.Migrations
                             ShoeId = 3,
                             Active = true,
                             BrandId = 3,
-                            ColourId = 1,
                             Description = "Importados",
                             GenreId = 3,
                             Model = "1982",
@@ -240,29 +235,32 @@ namespace TP01EF2024.Datos.Migrations
                         });
                 });
 
+            modelBuilder.Entity("TP01EF2024.Entidades.ShoeColour", b =>
+                {
+                    b.Property<int>("ShoeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ColourId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ShoeId", "ColourId");
+
+                    b.HasIndex("ColourId");
+
+                    b.ToTable("ShoesColours");
+                });
+
             modelBuilder.Entity("TP01EF2024.Entidades.ShoeSize", b =>
                 {
-                    b.Property<int>("ShoeSizeId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ShoeSizeId"));
-
-                    b.Property<int>("QuantityInStock")
-                        .HasColumnType("int");
-
                     b.Property<int>("ShoeId")
                         .HasColumnType("int");
 
                     b.Property<int>("SizeId")
                         .HasColumnType("int");
 
-                    b.HasKey("ShoeSizeId");
+                    b.HasKey("ShoeId", "SizeId");
 
                     b.HasIndex("SizeId");
-
-                    b.HasIndex("ShoeId", "SizeId")
-                        .IsUnique();
 
                     b.ToTable("ShoesSizes", (string)null);
                 });
@@ -568,12 +566,6 @@ namespace TP01EF2024.Datos.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TP01EF2024.Entidades.Colour", "Colour")
-                        .WithMany("Shoes")
-                        .HasForeignKey("ColourId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("TP01EF2024.Entidades.Genre", "Genre")
                         .WithMany("Shoes")
                         .HasForeignKey("GenreId")
@@ -588,11 +580,28 @@ namespace TP01EF2024.Datos.Migrations
 
                     b.Navigation("Brand");
 
-                    b.Navigation("Colour");
-
                     b.Navigation("Genre");
 
                     b.Navigation("Sport");
+                });
+
+            modelBuilder.Entity("TP01EF2024.Entidades.ShoeColour", b =>
+                {
+                    b.HasOne("TP01EF2024.Entidades.Colour", "Colour")
+                        .WithMany("ShoesColours")
+                        .HasForeignKey("ColourId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TP01EF2024.Entidades.Shoe", "Shoe")
+                        .WithMany("ShoesColours")
+                        .HasForeignKey("ShoeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Colour");
+
+                    b.Navigation("Shoe");
                 });
 
             modelBuilder.Entity("TP01EF2024.Entidades.ShoeSize", b =>
@@ -621,7 +630,7 @@ namespace TP01EF2024.Datos.Migrations
 
             modelBuilder.Entity("TP01EF2024.Entidades.Colour", b =>
                 {
-                    b.Navigation("Shoes");
+                    b.Navigation("ShoesColours");
                 });
 
             modelBuilder.Entity("TP01EF2024.Entidades.Genre", b =>
@@ -631,6 +640,8 @@ namespace TP01EF2024.Datos.Migrations
 
             modelBuilder.Entity("TP01EF2024.Entidades.Shoe", b =>
                 {
+                    b.Navigation("ShoesColours");
+
                     b.Navigation("ShoesSizes");
                 });
 

@@ -31,6 +31,8 @@ namespace TP01EF2024.InversionOfControl
 
             servicios.AddScoped<IShoesRepository, ShoesRepository>();
 
+            servicios.AddScoped<ISizesRepository, SizesRepository>();
+
             //SERVICIOS
 
             servicios.AddScoped<IBrandsService, BrandsService>();
@@ -42,6 +44,8 @@ namespace TP01EF2024.InversionOfControl
             servicios.AddScoped<IGenresService, GenresService>();
 
             servicios.AddScoped<IShoesService, ShoesService>();
+
+            servicios.AddScoped<ISizesService, SizesService>();
 
             //UNIT
 

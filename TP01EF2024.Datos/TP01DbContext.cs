@@ -25,7 +25,6 @@ namespace TP01EF2024.Datos
         public DbSet<Sport> Sports { get; set; }
         public DbSet<Colour> Colours { get; set; }
         public DbSet<Shoe> Shoes { get; set; }
-        public DbSet<ShoeColour> ShoesColours { get; set; }
         public DbSet<ShoeSize> ShoesSizes { get; set; }
         public DbSet<Size> Sizes { get; set; }
 
@@ -136,7 +135,7 @@ namespace TP01EF2024.Datos
                     SizeNumber = i
                 });
             }
-            
+
             var shoes = new List<Shoe>()
             {
                 new Shoe
@@ -145,6 +144,7 @@ namespace TP01EF2024.Datos
                     BrandId = 1,
                     SportId = 3,
                     GenreId = 2,
+                    ColourId = 1,
                     Model = "Deportivas",
                     Description = "Vans Deportivas",
                     Price = 15,
@@ -156,6 +156,7 @@ namespace TP01EF2024.Datos
                     BrandId = 2,
                     SportId = 1,
                     GenreId = 1,
+                    ColourId = 2,
                     Model = "Botines",
                     Description = "Botines Femeninos",
                     Price = 20,
@@ -167,6 +168,7 @@ namespace TP01EF2024.Datos
                     BrandId = 3,
                     SportId = 2,
                     GenreId = 3,
+                    ColourId = 1,
                     Model = "1982",
                     Description = "Importados",
                     Price = 35,
@@ -215,18 +217,12 @@ namespace TP01EF2024.Datos
                 entity.HasOne(s => s.Brand).WithMany(b => b.Shoes).HasForeignKey(s => s.BrandId);
                 entity.HasOne(s => s.Genre).WithMany(g => g.Shoes).HasForeignKey(s => s.GenreId);
                 entity.HasOne(s => s.Sport).WithMany(s => s.Shoes).HasForeignKey(s => s.SportId);
+                entity.HasOne(s => s.Colour).WithMany(s => s.Shoes).HasForeignKey(s => s.ColourId);
                 entity.Property(e => e.Model).IsRequired().HasMaxLength(150);
                 entity.Property(e => e.Price).HasPrecision(10,2);
                 entity.Property(e => e.Description).IsRequired();
                 entity.Property(e => e.Active).IsRequired().HasDefaultValue(true);
                 entity.HasData(shoes);
-            });
-
-            modelBuilder.Entity<ShoeColour>(entity =>
-            {
-                entity.HasKey(sc => new { sc.ShoeId, sc.ColourId });
-                entity.HasOne(sc => sc.Shoe).WithMany(s => s.ShoesColours).HasForeignKey(sc => sc.ShoeId);
-                entity.HasOne(sc => sc.Colour).WithMany(c => c.ShoesColours).HasForeignKey(sc => sc.ColourId);
             });
 
             modelBuilder.Entity<Size>(entity =>
@@ -240,9 +236,11 @@ namespace TP01EF2024.Datos
 
             modelBuilder.Entity<ShoeSize>(entity =>
             {
-                entity.HasKey(ss => new { ss.ShoeId, ss.SizeId });
+                entity.HasKey(ss => ss.ShoeSizeId);
+                entity.HasIndex(ss => new { ss.ShoeId, ss.SizeId }).IsUnique();
                 entity.HasOne(ss => ss.Shoe).WithMany(s => s.ShoesSizes).HasForeignKey(sc => sc.ShoeId);
                 entity.HasOne(ss => ss.Size).WithMany(s => s.ShoesSizes).HasForeignKey(sc => sc.SizeId);
+                entity.Property(ss => ss.QuantityInStock).IsRequired();
                 entity.ToTable("ShoesSizes");
 
             });

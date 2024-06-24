@@ -105,6 +105,11 @@ namespace TP01EF2024.Servicios.Servicios
             return _repository.GetColoursPaginadosOrdenados(page, pageSize, orden);
         }
 
+        public List<Shoe>? GetShoes(Colour colour)
+        {
+            return _repository.GetShoes(colour);
+        }
+
         public void Guardar(Colour colour)
         {
             try

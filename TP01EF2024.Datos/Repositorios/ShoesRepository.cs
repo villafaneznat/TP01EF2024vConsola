@@ -36,7 +36,7 @@ namespace TP01EF2024.Datos.Repositorios
 
         public bool EstaRelacionado(Shoe shoe)
         {
-            return _context.ShoesColours.Any(sc => sc.ShoeId == shoe.ShoeId);
+            return _context.ShoesSizes.Any(ss => ss.ShoeId == shoe.ShoeId);
         }
 
         public bool Existe(Shoe shoe)
@@ -46,11 +46,13 @@ namespace TP01EF2024.Datos.Repositorios
                 return _context.Shoes.Any(s => s.BrandId == shoe.BrandId 
                                             && s.SportId == shoe.SportId 
                                             && s.GenreId == shoe.GenreId
+                                            && s.ColourId == shoe.ColourId
                                             && s.Model == shoe.Model);
             }
             return _context.Shoes.Any(s => s.BrandId == shoe.BrandId 
                                         && s.SportId == shoe.SportId 
                                         && s.GenreId == shoe.GenreId
+                                        && s.ColourId == shoe.ColourId
                                         && s.Model == shoe.Model
                                         && s.ShoeId == shoe.ShoeId);
         }
@@ -61,6 +63,7 @@ namespace TP01EF2024.Datos.Repositorios
                 Include(s => s.Brand).
                 Include(s => s.Genre).
                 Include(s => s.Sport).
+                Include(s => s.Colour).
                 SingleOrDefault(s => s.ShoeId == id);
         }
 
@@ -70,6 +73,7 @@ namespace TP01EF2024.Datos.Repositorios
                 Include(s => s.Brand).
                 Include(s => s.Sport).
                 Include(s => s.Genre).
+                Include(s => s.Colour).
                 OrderBy(s => s.ShoeId).
                 AsNoTracking().ToList();
         }
@@ -80,6 +84,7 @@ namespace TP01EF2024.Datos.Repositorios
         }
 
         public List<Shoe> GetListaPaginadaOrdenadaFiltrada(
+            bool paginar,
             int page, 
             int pageSize, 
             Orden? orden = null, 
@@ -94,6 +99,7 @@ namespace TP01EF2024.Datos.Repositorios
                 .Include(s => s.Brand)
                 .Include(s => s.Sport)
                 .Include(s => s.Genre)
+                .Include(s => s.Colour)
                 .AsNoTracking();
 
             // FILTROS
@@ -111,6 +117,11 @@ namespace TP01EF2024.Datos.Repositorios
             {
                 query = query
                     .Where(s => s.GenreId == genre.GenreId);
+            }
+            if (colour != null)
+            {
+                query = query
+                    .Where(s => s.ColourId == colour.ColourId);
             }
 
             //ORDEN
@@ -144,12 +155,18 @@ namespace TP01EF2024.Datos.Repositorios
             }
 
             //PAGINADO
-            List<Shoe> listaPaginada = query.AsNoTracking()
+            if (paginar)
+            {
+                List<Shoe> listaPaginada = query.AsNoTracking()
                 .Skip(page * pageSize)//Saltea estos registros
                 .Take(pageSize)//Muestra estos
                 .ToList();
-
-            return listaPaginada;
+                return listaPaginada;
+            }
+            else
+            {
+                return query.ToList();
+            }
         }
 
         public int GetCantidadFiltrada(Brand? brand = null,
@@ -175,6 +192,11 @@ namespace TP01EF2024.Datos.Repositorios
             {
                 query = query
                     .Where(s => s.GenreId == genre.GenreId);
+            }
+            if (colour != null)
+            {
+                query = query
+                    .Where(s => s.ColourId == colour.ColourId);
             }
             //PRECIO
             if (maximo != null && minimo != null)

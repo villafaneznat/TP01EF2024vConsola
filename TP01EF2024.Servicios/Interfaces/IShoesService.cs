@@ -18,6 +18,7 @@ namespace TP01EF2024.Servicios.Interfaces
         Shoe GetShoePorId(int id);
         bool EstaRelacionado(Shoe shoe);
         List<Shoe> GetListaPaginadaOrdenadaFiltrada(
+            bool paginar,
             int page,
             int pageSize,
             Orden? orden = null,

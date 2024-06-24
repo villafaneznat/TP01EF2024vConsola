@@ -10,11 +10,11 @@ using TP01EF2024.Entidades.Enums;
 
 namespace TP01EF2024.Datos.Repositorios
 {
-    public class SizeRepository : ISizesRepository
+    public class SizesRepository : ISizesRepository
     {
         private readonly TP01DbContext _context;
 
-        public SizeRepository(TP01DbContext context)
+        public SizesRepository(TP01DbContext context)
         {
             _context = context;
         }
