@@ -6,5 +6,10 @@ namespace TP01EF2024.Windows
         {
             InitializeComponent();
         }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }
