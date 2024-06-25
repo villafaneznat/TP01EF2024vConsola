@@ -91,5 +91,28 @@ namespace TP01EF2024.Datos.Repositorios
 
             return listaPaginada;
         }
+
+        public List<Shoe> GetShoesForSize(int sizeId)
+        {
+            //return _context.ShoesSizes
+            //    .Include(ss => ss.Shoe)
+            //    .Where(ss => ss.SizeId == sizeId)
+            //    .Select(ss => ss.Shoe)
+            //    .Include(s => s.Brand)
+            //    .Include(s => s.Genre)
+            //    .Include(s => s.Sport)
+            //    .Include(s => s.Colour)
+            //    .ToList();
+            return _context.ShoesSizes
+                .Include(ss => ss.Shoe).ThenInclude(s => s.Brand)
+                .Include(ss => ss.Shoe).ThenInclude(s => s.Genre)
+                .Include(ss => ss.Shoe).ThenInclude(s => s.Sport)
+                .Include(ss => ss.Shoe).ThenInclude(s => s.Colour)
+                .Where(ss => ss.SizeId == sizeId)
+                .Select(ss => ss.Shoe)
+                .ToList();
+
+        }
+
     }
 }

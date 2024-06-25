@@ -19,5 +19,6 @@ namespace TP01EF2024.Datos.Interfaces
         List<Size> GetSizes();
         int GetCantidad();
         List<Size> GetSizesPaginadosOrdenados(int page, int pageSize, Orden? orden = null);
+        List<Shoe>? GetShoesForSize(int sizeId);
     }
 }

@@ -146,5 +146,19 @@ namespace TP01EF2024.Servicios.Servicios
                 throw;
             }
         }
+
+        public List<Shoe>? GetShoesForSize(int sizeId)
+        {
+            try
+            {
+                return _repository.GetShoesForSize(sizeId);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
     }
 }

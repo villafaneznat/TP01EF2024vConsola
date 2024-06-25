@@ -85,9 +85,11 @@ namespace TP01EF2024.Consola
                 //VER LOS ZAPATOS POR DEPORTE Y COLOR
                 //VER LOS ZAPATOS POR COLOR Y TALLE
                 Console.WriteLine();
-                //MOSTRAR ZAPATOS POR TALLE (elijo un talle y me traigo los zapatos en ese talle)
-                //MOSTRAR TALLE POR ZAPATOS (elijo un zapato y me traigo todos los talles en los que está disponible)
-                //ASIGNAR TALLE A ZAPATO (muestro los zapatos, elijo uno, muestro los talles, y lo asigno a ese zapato)
+                Console.WriteLine("40. Ver todos los Zapatos disponibles en un determinado Talle");
+                Console.WriteLine("41. Ver los talles disponibles de un Zapato");
+                Console.WriteLine("42. Asignar Talles");
+                Console.WriteLine();
+                Console.WriteLine();
                 Console.WriteLine("PRESIONE X PARA SALIR");
                 Console.Write("Por favor, seleccione una opción: ");
                 string? input = Console.ReadLine();
@@ -304,7 +306,23 @@ namespace TP01EF2024.Consola
                         MostrarZapatosPorVariasEntidades("genero", "deporte", string.Empty, string.Empty);
                         ConsoleExtensions.Enter();
                         break;
-                       
+                    case "40":
+                        Console.Clear();
+                        MostrarZapatosPorTalle();
+                        //MOSTRAR ZAPATOS POR TALLE (elijo un talle y me traigo los zapatos en ese talle)
+                        ConsoleExtensions.Enter();
+                        break;
+                    case "41":
+                        Console.Clear();
+                        MostrarTallesPorZapato();
+                        ConsoleExtensions.Enter();
+                        break;
+                    case "42":
+                        Console.Clear();
+                        AsignarTalles();
+                        ConsoleExtensions.Enter();
+                        break;
+
 
                     case "x":
                         exit = true;
@@ -765,6 +783,168 @@ namespace TP01EF2024.Consola
         }
 
 
+        //SHOE SIZE
+        private static void AsignarTalles()
+        {
+            var servicioTalles = servicioProvider?.GetService<ISizesService>();
+            var servicioShoes = servicioProvider?.GetService<IShoesService>();
+
+            if (servicioTalles == null || servicioShoes == null)
+            {
+                Console.WriteLine("Servicios no disponibles.");
+                return;
+            }
+
+            MostrarZapatos();
+            var shoeId = ConsoleExtensions.ReadInt("Ingrese el ID del zapato al que se le asignará un talle: ");
+            Shoe shoe = servicioShoes.GetShoePorId(shoeId);
+            if (shoe != null)
+            {
+                MostrarTalles();
+                var sizeId = ConsoleExtensions.ReadInt("Ingrese el ID del talle que desea asignar al zapato:  ");
+                Size size = servicioTalles.GetSizePorId(sizeId);
+
+                if (size != null)
+                {
+                    Console.WriteLine($"Está por agregar el talle {size.SizeNumber} a los zapatos de id {shoe.ShoeId} y modelo {shoe.Model}");
+                    var stock = ConsoleExtensions.ReadInt("Ingrese la cantidad de stock a dar de alta para este ingreso: ");
+                    servicioShoes.AsignarTalle(shoe, size, stock);
+
+                    Console.WriteLine("Se ingresó lo siguiente:");
+                    Console.WriteLine($"ZAPATOS: ");
+                    Console.WriteLine($"Marca: {shoe.Brand.BrandName}");
+                    Console.WriteLine($"Deporte: {shoe.Sport.SportName}");
+                    Console.WriteLine($"Genero: {shoe.Genre.GenreName}");
+                    Console.WriteLine($"Color: {shoe.Colour.ColourName}");
+                    Console.WriteLine($"Modelo: {shoe.Model}");
+                    Console.WriteLine($"Descripción {shoe.Description}");
+                    Console.WriteLine($"Precio {shoe.Price}");
+                    Console.WriteLine($"TALLE: {size.SizeNumber}");
+                    Console.WriteLine($"Cantidad de stock: {stock}");
+
+                    Console.WriteLine("Registro agregado satisfactoriamente...");
+                }
+                else
+                {
+                    Console.WriteLine("El ID del talle que ha seleccionado, no existe");
+
+                }
+            }
+            else
+            {
+                Console.WriteLine("El ID del zapato que ha seleccionado, no existe");
+            }
+            
+        }
+
+        private static void MostrarTallesPorZapato()
+        {
+            var servicioShoes = servicioProvider?.GetService<IShoesService>();
+
+            MostrarZapatos();
+
+            var shoeId = ConsoleExtensions.ReadInt("Ingrese el ID del zapato para poder ver los talles en los que se encuentra disponible: ");
+
+            Shoe? shoe = servicioShoes?.GetShoePorId(shoeId);
+
+            if (shoe != null)
+            {
+                Console.WriteLine("ZAPATO SELECCIONADO: ");
+
+                var tablaShoe = new ConsoleTable("ID", "MARCA", "DEPORTE", "GENERO", "COLOR", "MODELO", "DESCRIPCION", "PRECIO");
+                tablaShoe.AddRow(
+                        shoe.ShoeId,
+                        shoe.Brand.BrandName,
+                        shoe.Sport.SportName,
+                        shoe.Genre.GenreName,
+                        shoe.Colour.ColourName,
+                        shoe.Model,
+                        shoe.Description,
+                        shoe.Price);
+                tablaShoe.Options.EnableCount = false;
+                tablaShoe.Write();
+
+                List<Size>? sizes = servicioShoes?.GetSizesForShoe(shoe.ShoeId);
+                if (sizes != null && sizes.Count() > 0)
+                {
+                    Console.WriteLine("TALLES DISPONIBLES");
+
+                    var tablaSizes = new ConsoleTable("ID", "TALLE", "STOCK");
+                    foreach (var s in sizes)
+                    {
+                        int stock = servicioShoes.GetStockShoeSize(shoe, s);
+
+                        tablaSizes.AddRow(s.SizeId, s.SizeNumber, stock);
+                    }
+                    tablaSizes.Options.EnableCount = false;
+                    tablaSizes.Write();
+
+                }
+                else
+                {
+                    Console.WriteLine("No hay talles disponibles para este zapato.");
+                    Console.WriteLine();
+                }
+
+            }
+            else
+            {
+                Console.WriteLine("El ID que ha ingresado no corresponde a ningun zapato.");
+            }
+        }
+
+        private static void MostrarZapatosPorTalle()
+        {
+            var servicioSizes = servicioProvider?.GetService<ISizesService>();
+            var servicioShoes = servicioProvider?.GetService<IShoesService>();
+
+            MostrarTalles();
+
+            var sizeId = ConsoleExtensions.ReadInt("Ingrese el ID del talle para poder ver los zapatos disponibles: ");
+
+            Size? size = servicioSizes?.GetSizePorId(sizeId);
+
+            if (size != null)
+            {
+                Console.WriteLine($"TALLE SELECCIONADO: {size.SizeNumber}");
+
+                List<Shoe>? shoes = servicioSizes?.GetShoesForSize(size.SizeId);
+
+                if (shoes != null && shoes.Count() > 0)
+                {
+                    Console.WriteLine("ZAPATOS DISPONIBLES:");
+                    var tabla = new ConsoleTable("ID", "MARCA", "DEPORTE", "GENERO", "COLOR", "MODELO", "DESCRIPCION", "PRECIO", "STOCK");
+                    foreach (var s in shoes)
+                    {
+                        int stock = servicioShoes.GetStockShoeSize(s, size);
+
+                        tabla.AddRow(s.ShoeId,
+                            s.Brand.BrandName,
+                            s.Sport.SportName,
+                            s.Genre.GenreName,
+                            s.Colour.ColourName,
+                            s.Model,
+                            s.Description,
+                            s.Price,
+                            stock);
+                    }
+                    tabla.Options.EnableCount = false;
+                    tabla.Write();
+                }
+                else
+                {
+                    Console.WriteLine("No hay zapatos disponibles en el talle seleccionado.");
+                    Console.WriteLine();
+                }
+
+            }
+            else
+            {
+                Console.WriteLine("El ID que ha ingresado no corresponde a ningun talle.");
+            }
+        }
+
+
         //SIZES
         private static void MostrarTalles()
         {
@@ -922,8 +1102,6 @@ namespace TP01EF2024.Consola
                 ConsoleExtensions.Enter();
             }
         }
-
-
 
 
         //GENRES

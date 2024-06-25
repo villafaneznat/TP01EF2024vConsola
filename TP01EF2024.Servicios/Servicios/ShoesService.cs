@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -125,6 +127,72 @@ namespace TP01EF2024.Servicios.Servicios
         public int GetCantidadFiltrada(Brand? brand = null, Sport? sport = null, Genre? genre = null, Colour? colour = null, decimal? maximo = null, decimal? minimo = null)
         {
             return _repository.GetCantidadFiltrada(brand, sport, genre, colour, maximo, minimo);
+        }
+
+        public List<Size> GetSizesForShoe(int shoeId)
+        {
+            try
+            {
+                return _repository.GetSizesForShoe(shoeId);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public void AsignarTalle(Shoe shoe, Size size, int stock)
+        {
+            try
+            {
+                _unitOfWork.BeginTransaction();
+
+                //Busco si ya existe la asociación entre size y shoe, si existe, obtengo la relación
+                var shoeSize = _repository.ExisteShoeSize(shoe, size);
+
+                if (shoeSize != null)
+                {
+                    shoeSize.QuantityInStock += stock;
+                    _repository.ActualizarShoeSize(shoeSize);
+
+                }
+                else
+                {
+                    // Si no existe, creo una nueva relación
+
+                    ShoeSize nuevaRelacion = new ShoeSize()
+                    {
+                        Shoe = shoe,
+                        Size = size,
+                        QuantityInStock = stock
+
+                    };
+
+                    _repository.AgregarShoeSize(nuevaRelacion);
+
+                }
+                _unitOfWork.Commit();
+            }
+            catch (Exception)
+            {
+                _unitOfWork.RollBack();
+                throw;
+            }
+        }
+
+        public int GetStockShoeSize(Shoe shoe, Size size)
+        {
+            var shoeSize = _repository.ExisteShoeSize(shoe, size);
+            
+            if (shoeSize != null)
+            {
+                return shoeSize.QuantityInStock;
+            }
+            else
+            {
+                throw new ArgumentException();
+            }
         }
     }
 }

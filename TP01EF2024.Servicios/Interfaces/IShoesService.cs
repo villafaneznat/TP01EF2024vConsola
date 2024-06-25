@@ -35,5 +35,8 @@ namespace TP01EF2024.Servicios.Interfaces
             decimal? maximo = null,
             decimal? minimo = null);
 
+        List<Size> GetSizesForShoe(int shoeId);
+        void AsignarTalle(Shoe shoe, Size size, int stock);
+        int GetStockShoeSize(Shoe shoe, Size size);
     }
 }

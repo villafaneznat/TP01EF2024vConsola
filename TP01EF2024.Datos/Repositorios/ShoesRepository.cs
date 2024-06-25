@@ -14,6 +14,7 @@ namespace TP01EF2024.Datos.Repositorios
     public class ShoesRepository : IShoesRepository
     {
         private readonly TP01DbContext _context;
+
         public ShoesRepository(TP01DbContext context)
         {
             _context = context;
@@ -208,5 +209,32 @@ namespace TP01EF2024.Datos.Repositorios
 
             return query.Count();
         }
+
+        public List<Size> GetSizesForShoe(int shoeId)
+        {
+            return _context.ShoesSizes
+                .Include(ss => ss.Size)
+                .Where(ss => ss.ShoeId == shoeId)
+                .Select(ss => ss.Size)
+                .ToList();
+
+        }
+
+        public void AgregarShoeSize(ShoeSize nuevaRelacion)
+        {
+            _context.Set<ShoeSize>().Add(nuevaRelacion);
+        }
+
+        public ShoeSize? ExisteShoeSize(Shoe shoe, Size size)
+        {
+            return _context.ShoesSizes.FirstOrDefault(ss => ss.ShoeId == shoe.ShoeId && ss.SizeId == size.SizeId);
+        }
+
+        public void ActualizarShoeSize(ShoeSize shoeSize)
+        {
+            _context.Set<ShoeSize>().Update(shoeSize);
+        }
+
+
     }
 }

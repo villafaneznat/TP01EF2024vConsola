@@ -35,6 +35,10 @@ namespace TP01EF2024.Datos.Interfaces
             Colour? colour = null,
             decimal? maximo = null,
             decimal? minimo = null);
+        List<Size> GetSizesForShoe(int shoeId);
+        void AgregarShoeSize(ShoeSize nuevaRelacion);
 
+        ShoeSize? ExisteShoeSize(Shoe shoe, Size size);
+        void ActualizarShoeSize(ShoeSize shoeSize);
     }
 }
