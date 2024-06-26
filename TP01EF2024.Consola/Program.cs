@@ -1,11 +1,5 @@
-﻿
-
-using Azure;
-using ConsoleTables;
-using Microsoft.EntityFrameworkCore;
+﻿using ConsoleTables;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using System.Numerics;
 using TP01EF2024.Entidades;
 using TP01EF2024.InversionOfControl;
 using TP01EF2024.Servicios.Interfaces;
@@ -74,21 +68,10 @@ namespace TP01EF2024.Consola
                 Console.WriteLine("38. Ver los Zapatos POR COLOR entre 2 precios (pagindo)");
                 Console.WriteLine();
                 Console.WriteLine("39. Ver los Zapatos POR GENERO y DEPORTE");
-                //POSIBLES COMBINACIONES (de dos variables)
-                //VER LOS ZAPATOS POR GENERO Y MARCA
-                //VER LOS ZAPATOS POR GENERO Y COLOR
-                //VER LOS ZAPATOS POR GENERO Y TALLE
-                //VER LOS ZAPATOS POR MARCA Y COLOR
-                //VER LOS ZAPATOS POR MARCA Y DEPORTE
-                //VER LOS ZAPATOS POR MARCA Y TALLE
-                //VER LOS ZAPATOS POR DEPORTE Y TALLE
-                //VER LOS ZAPATOS POR DEPORTE Y COLOR
-                //VER LOS ZAPATOS POR COLOR Y TALLE
                 Console.WriteLine();
                 Console.WriteLine("40. Ver todos los Zapatos disponibles en un determinado Talle");
                 Console.WriteLine("41. Ver los talles disponibles de un Zapato");
                 Console.WriteLine("42. Asignar Talles");
-                Console.WriteLine();
                 Console.WriteLine();
                 Console.WriteLine("PRESIONE X PARA SALIR");
                 Console.Write("Por favor, seleccione una opción: ");
@@ -322,8 +305,6 @@ namespace TP01EF2024.Consola
                         AsignarTalles();
                         ConsoleExtensions.Enter();
                         break;
-
-
                     case "x":
                         exit = true;
                         break;

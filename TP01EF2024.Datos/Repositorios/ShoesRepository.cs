@@ -21,12 +21,76 @@ namespace TP01EF2024.Datos.Repositorios
         }
 
         public void Agregar(Shoe shoe)
-        {
+        {          
+            var brandExist = _context.Brands.FirstOrDefault(b => b.BrandId == shoe.BrandId); // Verificar si la marca asociadoal zapatp ya existe en la base de datos
+            
+            if (brandExist != null) 
+            {
+                _context.Attach(brandExist);
+                shoe.Brand = brandExist;
+            }  // Si la marca ya existe, adjuntarlo al contexto en lugar de agregarlo nuevamente
+
+            var sportExist = _context.Sports.FirstOrDefault(s => s.SportId == shoe.SportId);
+            
+            if (sportExist != null)
+            {
+                _context.Attach(sportExist);
+                shoe.Sport = sportExist;
+            }
+
+            var genreExist = _context.Genres.FirstOrDefault(g => g.GenreId == shoe.GenreId);
+
+            if (genreExist != null)
+            {
+                _context.Attach(genreExist);
+                shoe.Genre = genreExist;
+            }
+
+            var colourExist = _context.Colours.FirstOrDefault(c => c.ColourId == shoe.ColourId);
+
+            if (colourExist != null)
+            {
+                _context.Attach(colourExist);
+                shoe.Colour = colourExist;
+            }
+
             _context.Shoes.Add(shoe);
         }
 
         public void Editar(Shoe shoe)
         {
+            var brandExist = _context.Brands.FirstOrDefault(b => b.BrandId == shoe.BrandId); 
+
+            if (brandExist != null)
+            {
+                _context.Attach(brandExist);
+                shoe.Brand = brandExist;
+            } 
+
+            var sportExist = _context.Sports.FirstOrDefault(s => s.SportId == shoe.SportId);
+
+            if (sportExist != null)
+            {
+                _context.Attach(sportExist);
+                shoe.Sport = sportExist;
+            }
+
+            var genreExist = _context.Genres.FirstOrDefault(g => g.GenreId == shoe.GenreId);
+
+            if (genreExist != null)
+            {
+                _context.Attach(genreExist);
+                shoe.Genre = genreExist;
+            }
+
+            var colourExist = _context.Colours.FirstOrDefault(c => c.ColourId == shoe.ColourId);
+
+            if (colourExist != null)
+            {
+                _context.Attach(colourExist);
+                shoe.Colour = colourExist;
+            }
+
             _context.Shoes.Update(shoe);
         }
 
