@@ -1,11 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TP01EF2024.Datos.Interfaces;
+﻿using TP01EF2024.Datos.Interfaces;
 using TP01EF2024.Entidades;
 using TP01EF2024.Entidades.Enums;
 using TP01EF2024.Servicios.Interfaces;
@@ -192,6 +185,34 @@ namespace TP01EF2024.Servicios.Servicios
             else
             {
                 throw new ArgumentException();
+            }
+        }
+
+        public void EliminarShoeSize(Shoe shoe, Size size)
+        {
+            try
+            {
+                try
+                {
+                    var ss = _repository.ExisteShoeSize(shoe, size);
+
+                    _unitOfWork.BeginTransaction();
+
+                    _repository.EliminarShoeSize(ss);
+
+                    _unitOfWork.Commit();
+                }
+                catch (Exception)
+                {
+                    _unitOfWork.RollBack();
+                    throw;
+                }
+
+            }
+            catch (Exception)
+            {
+
+                throw;
             }
         }
     }

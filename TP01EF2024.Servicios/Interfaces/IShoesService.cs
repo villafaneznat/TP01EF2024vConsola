@@ -34,9 +34,10 @@ namespace TP01EF2024.Servicios.Interfaces
             Colour? colour = null,
             decimal? maximo = null,
             decimal? minimo = null);
-
-        List<Size> GetSizesForShoe(int shoeId);
         void AsignarTalle(Shoe shoe, Size size, int stock);
+        void EliminarShoeSize(Shoe shoe, Size size);
         int GetStockShoeSize(Shoe shoe, Size size);
+        List<Size> GetSizesForShoe(int shoeId);
+
     }
 }

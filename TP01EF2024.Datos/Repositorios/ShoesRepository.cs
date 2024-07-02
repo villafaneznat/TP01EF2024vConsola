@@ -1,13 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TP01EF2024.Datos.Interfaces;
 using TP01EF2024.Entidades;
 using TP01EF2024.Entidades.Enums;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace TP01EF2024.Datos.Repositorios
 {
@@ -112,13 +106,17 @@ namespace TP01EF2024.Datos.Repositorios
                                             && s.SportId == shoe.SportId 
                                             && s.GenreId == shoe.GenreId
                                             && s.ColourId == shoe.ColourId
-                                            && s.Model == shoe.Model);
+                                            && s.Model == shoe.Model
+                                            && s.Description == shoe.Description
+                                            && s.Price == shoe.Price);
             }
             return _context.Shoes.Any(s => s.BrandId == shoe.BrandId 
                                         && s.SportId == shoe.SportId 
                                         && s.GenreId == shoe.GenreId
                                         && s.ColourId == shoe.ColourId
                                         && s.Model == shoe.Model
+                                        && s.Description == shoe.Description
+                                        && s.Price == shoe.Price
                                         && s.ShoeId == shoe.ShoeId);
         }
 
@@ -274,6 +272,23 @@ namespace TP01EF2024.Datos.Repositorios
             return query.Count();
         }
 
+        
+
+        public void AgregarShoeSize(ShoeSize nuevaRelacion)
+        {
+            _context.Set<ShoeSize>().Add(nuevaRelacion);
+        }
+
+        public void ActualizarShoeSize(ShoeSize shoeSize)
+        {
+            _context.Set<ShoeSize>().Update(shoeSize);
+        }
+
+        public void EliminarShoeSize(ShoeSize? ss)
+        {
+            _context.ShoesSizes.Remove(ss);
+        }
+
         public List<Size> GetSizesForShoe(int shoeId)
         {
             return _context.ShoesSizes
@@ -284,21 +299,9 @@ namespace TP01EF2024.Datos.Repositorios
 
         }
 
-        public void AgregarShoeSize(ShoeSize nuevaRelacion)
-        {
-            _context.Set<ShoeSize>().Add(nuevaRelacion);
-        }
-
         public ShoeSize? ExisteShoeSize(Shoe shoe, Size size)
         {
             return _context.ShoesSizes.FirstOrDefault(ss => ss.ShoeId == shoe.ShoeId && ss.SizeId == size.SizeId);
         }
-
-        public void ActualizarShoeSize(ShoeSize shoeSize)
-        {
-            _context.Set<ShoeSize>().Update(shoeSize);
-        }
-
-
     }
 }

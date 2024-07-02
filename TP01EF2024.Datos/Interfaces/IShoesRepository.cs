@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TP01EF2024.Entidades;
+﻿using TP01EF2024.Entidades;
 using TP01EF2024.Entidades.Enums;
 
 namespace TP01EF2024.Datos.Interfaces
@@ -35,10 +30,10 @@ namespace TP01EF2024.Datos.Interfaces
             Colour? colour = null,
             decimal? maximo = null,
             decimal? minimo = null);
-        List<Size> GetSizesForShoe(int shoeId);
         void AgregarShoeSize(ShoeSize nuevaRelacion);
-
-        ShoeSize? ExisteShoeSize(Shoe shoe, Size size);
         void ActualizarShoeSize(ShoeSize shoeSize);
+        void EliminarShoeSize(ShoeSize? ss);
+        List<Size> GetSizesForShoe(int shoeId);
+        ShoeSize? ExisteShoeSize(Shoe shoe, Size size);
     }
 }
