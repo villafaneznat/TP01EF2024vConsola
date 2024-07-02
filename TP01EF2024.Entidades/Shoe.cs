@@ -1,14 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Numerics;
-using System.Reflection;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TP01EF2024.Entidades
+﻿namespace TP01EF2024.Entidades
 {
     public class Shoe
     {
@@ -24,7 +14,7 @@ namespace TP01EF2024.Entidades
         public string Model { get; set; } = null!;
         public string Description { get; set; } = null!;
         public decimal Price { get; set; }
-        public bool Active { get; set; }
+        public bool Active { get; set; } = true;
         public ICollection<ShoeSize> ShoesSizes { get; set; } = new List<ShoeSize>();
 
     }
